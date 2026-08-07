@@ -8,7 +8,7 @@
 
 <p align="center">
   <img
-    src="docs/assets/builder-preview.png"
+    src="docs/assets/builder-preview.en.png"
     alt="Sing-box Config Builder: VPN tunnel selection and generated config.json"
     width="100%"
   />
@@ -63,7 +63,7 @@ Ports, Happ HWID setup, and container management are documented in
 
 ## Build a config
 
-![Short builder walkthrough](docs/assets/quick-start.gif)
+![Short builder walkthrough](docs/assets/quick-start.en.gif)
 
 1. Add one or more subscription URLs.
 2. Enable **Happ HWID** only for providers that require it.
@@ -82,14 +82,14 @@ node.
 Supported nodes can be enabled or disabled with checkboxes. Unsupported nodes
 remain visible with the exact reason they were skipped.
 
-![VPN tunnel selection](docs/assets/tunnel-selection.png)
+![VPN tunnel selection](docs/assets/tunnel-selection.en.png)
 
 ### Generated file
 
 After the build, the right column shows the number of tunnels, skipped nodes,
 DIRECT domains, and the complete downloadable JSON.
 
-![Generated config.json](docs/assets/config-output.png)
+![Generated config.json](docs/assets/config-output.en.png)
 
 ## Happ HWID
 

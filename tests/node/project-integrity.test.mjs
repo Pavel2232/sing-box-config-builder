@@ -120,6 +120,23 @@ test("README documents every supported launch and recovery path", () => {
   assert.ok(englishReadme.includes("[Русский](README.md)"));
   assert.ok(readme.includes("http://127.0.0.1:18765/en/"));
   assert.ok(englishReadme.includes("http://127.0.0.1:8765/en/"));
+
+  for (const asset of [
+    "builder-preview.en.png",
+    "quick-start.en.gif",
+    "tunnel-selection.en.png",
+    "config-output.en.png",
+  ]) {
+    const relativePath = `docs/assets/${asset}`;
+    assert.ok(
+      englishReadme.includes(relativePath),
+      `README.en.md does not reference: ${relativePath}`,
+    );
+    assert.ok(
+      fs.existsSync(path.join(projectRoot, relativePath)),
+      `missing English README asset: ${relativePath}`,
+    );
+  }
 });
 
 

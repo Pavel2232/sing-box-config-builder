@@ -1,5 +1,7 @@
 node_modules/
 test-results/
+.playwright-cli/
+output/playwright/
 .idea/
 __pycache__/
 *.pyc
