@@ -1,0 +1,25 @@
+name: sing-box-config-builder
+
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: sing-box-config-builder-local/Dockerfile
+    container_name: sing-box-config-builder
+    restart: unless-stopped
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      HAPP_HWID_FILE: /run/secrets/happ_hwid
+    secrets:
+      - happ_hwid
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    ports:
+      - "127.0.0.1:${BUILDER_PORT:-18765}:8765"
+
+secrets:
+  happ_hwid:
+    file: ./sing-box-config-builder-local/.happ-hwid

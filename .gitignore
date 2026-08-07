@@ -1,0 +1,10 @@
+node_modules/
+test-results/
+__pycache__/
+*.pyc
+.DS_Store
+.ruff_cache/
+.env
+
+# Contains a personal Happ device identifier.
+sing-box-config-builder-local/.happ-hwid

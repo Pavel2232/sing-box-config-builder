@@ -1,0 +1,12 @@
+*
+!build-sing-box-config-builder.mjs
+!sing-box-config-builder.template.html
+!sing-box-duckvpn-whitelist-direct-plus-vni-refreshed-2026-07-27.json
+!sing-box-config-builder.py
+!data/
+!data/**
+!src/
+!src/**
+!sing-box-config-builder-local/
+sing-box-config-builder-local/*
+!sing-box-config-builder-local/Dockerfile

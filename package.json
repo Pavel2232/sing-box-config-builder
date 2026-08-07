@@ -1,0 +1,16 @@
+{
+  "name": "sing-box-config-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local sing-box config builder for OpenWrt",
+  "scripts": {
+    "build": "node build-sing-box-config-builder.mjs",
+    "test": "npm run test:python && npm run test:build && npm run test:docker",
+    "test:python": "python3 -m unittest discover -s tests/python -v",
+    "test:build": "node --test tests/node/*.test.mjs",
+    "test:docker": "docker compose config --quiet"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

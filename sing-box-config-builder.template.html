@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Локальный генератор sing-box config.json для OpenWrt"
+    />
+    <title>Sing-box Config Builder</title>
+    <style>
+__APP_CSS__
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <div class="eyebrow"><span class="pulse"></span> OpenWrt toolkit</div>
+          <h1>Sing-box Config Builder</h1>
+          <p>
+            Собирает полный <strong>config.json</strong> из VPN-подписок,
+            оставляет DIRECT режимом по умолчанию, а мимо VPN отправляет только
+            сервисы из встроенных белых списков.
+          </p>
+        </div>
+      </header>
+
+      <div class="notice">
+        <strong>Важно.</strong>
+        <span id="backendHelp">
+          Подписки содержат секретные ключи. Страница ничего не отправляет
+          сторонним сервисам и не сохраняет ссылки. При запуске через
+          <code>sing-box-config-builder.py</code> подписку скачивает локальный
+          Python, поэтому CORS не мешает.
+        </span>
+      </div>
+
+      <div class="layout">
+        <div class="stack">
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>1. VPN-подписки</h2>
+                <p>Можно добавить любое количество источников и префикс имён.</p>
+              </div>
+              <span class="count" id="sourceSummary">0 узлов</span>
+            </div>
+
+            <div class="source-list" id="sourceList"></div>
+            <div class="toolbar">
+              <button class="btn btn-blue" id="addSource" type="button">
+                + Добавить подписку
+              </button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>2. Всегда напрямую</h2>
+                <p>
+                  Белые списки российских сервисов уже добавлены по умолчанию.
+                  Свои домены или URL можно добавить по одному на строку.
+                </p>
+              </div>
+              <span class="count" id="domainCount">0 доменов</span>
+            </div>
+            <textarea
+              id="directDomains"
+              spellcheck="false"
+              aria-label="Домены прямого маршрута"
+            ></textarea>
+            <div class="toolbar">
+              <button class="btn" id="resetDomains" type="button">
+                Вернуть базовый список
+              </button>
+              <button class="btn" id="sortDomains" type="button">
+                Очистить дубли и сортировать
+              </button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>3. Настройки</h2>
+                <p>Настройки подходят для sing-box версии 1.12.17.</p>
+              </div>
+            </div>
+            <div class="settings-grid">
+              <label>
+                Проверка туннелей
+                <input id="healthInterval" value="20m" />
+              </label>
+              <label>
+                Адрес Yacd API
+                <input id="controllerAddress" value="0.0.0.0:9090" />
+              </label>
+              <label>
+                Пароль Yacd
+                <input id="controllerSecret" autocomplete="new-password" />
+              </label>
+              <label>
+                Имя TUN
+                <input id="tunName" value="singtun0" />
+              </label>
+            </div>
+            <button class="build-button" id="buildConfig" type="button">
+              Собрать полный config.json
+            </button>
+            <div class="status warn">
+              Адрес <code>0.0.0.0:9090</code> открывает Yacd для устройств в
+              домашней сети. Пароль берётся из рабочего конфига и сохраняется
+              в браузере. Команда удаления <code>cache.db</code> ниже один раз
+              сбросит старый выбор на <code>DIRECT</code>.
+            </div>
+            <div class="status" id="buildStatus">
+              Сначала загрузите хотя бы одну подписку.
+            </div>
+          </section>
+        </div>
+
+        <aside class="stack">
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>Готовый конфиг</h2>
+                <p>DIRECT выбран по умолчанию, AUTO проверяет все узлы.</p>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <span class="stat-value" id="nodeStat">0</span>
+                <span class="stat-label">туннелей</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value" id="skippedStat">0</span>
+                <span class="stat-label">пропущено</span>
+              </div>
+              <div class="stat">
+                <span class="stat-value" id="directStat">0</span>
+                <span class="stat-label">DIRECT доменов</span>
+              </div>
+            </div>
+            <div class="status warn hidden" id="skippedDetails"></div>
+
+            <textarea
+              id="jsonOutput"
+              spellcheck="false"
+              readonly
+              placeholder="Здесь появится полный JSON…"
+              aria-label="Готовый config.json"
+            ></textarea>
+            <div class="output-actions">
+              <button class="btn btn-primary" id="downloadConfig" type="button" disabled>
+                Скачать config.json
+              </button>
+              <button class="btn" id="copyConfig" type="button" disabled>
+                Копировать JSON
+              </button>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <div>
+                <h2>Команды после загрузки</h2>
+                <p>
+                  Положите файл в <code>/etc/sing-box/config.json</code>, затем
+                  выполните:
+                </p>
+              </div>
+            </div>
+            <pre class="commands" id="commands">rm -f /etc/sing-box/cache.db
+
+sing-box check -c /etc/sing-box/config.json
+
+/etc/init.d/sing-box enable
+/etc/init.d/sing-box restart</pre>
+            <div class="output-actions">
+              <button class="btn" id="copyCommands" type="button">
+                Копировать команды
+              </button>
+            </div>
+            <p class="footer-note">
+              Пустой вывод команды <code>sing-box check</code> означает, что
+              конфиг прошёл проверку.
+            </p>
+            <h3>Если после запуска пропал интернет</h3>
+            <pre class="commands" id="recoveryCommands">/etc/init.d/sing-box stop
+/etc/init.d/sing-box disable</pre>
+            <div class="output-actions">
+              <button class="btn btn-danger" id="copyRecovery" type="button">
+                Копировать аварийное отключение
+              </button>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <div class="toast hidden" id="toast" role="status"></div>
+
+    <script type="application/json" id="baseConfig">__BASE_CONFIG_JSON__</script>
+    <script>
+      "use strict";
+
+__PARSER_NORMALIZATION_JS__
+
+__PARSER_TRANSPORTS_JS__
+
+__SUBSCRIPTION_PARSER_JS__
+
+__SOURCE_UI_JS__
+
+__APP_JS__
+    </script>
+  </body>
+</html>
