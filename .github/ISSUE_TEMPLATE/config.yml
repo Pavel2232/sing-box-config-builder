@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/Pavel2232/sing-box-config-builder/security/advisories/new
+    about: Report security problems privately; never publish working secrets.
+  - name: Support guide
+    url: https://github.com/Pavel2232/sing-box-config-builder/blob/main/SUPPORT.md
+    about: Read what information to include and how to sanitize credentials.

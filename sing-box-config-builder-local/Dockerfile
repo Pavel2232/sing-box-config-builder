@@ -20,6 +20,7 @@ RUN addgroup -S builder && adduser -S -G builder builder
 
 COPY --chown=builder:builder sing-box-config-builder.py ./
 COPY --from=web --chown=builder:builder /src/sing-box-config-builder.html ./
+COPY --from=web --chown=builder:builder /src/sing-box-config-builder.en.html ./
 
 USER builder
 

@@ -281,9 +281,13 @@ class HttpServerTests(unittest.TestCase):
         cls.temp_dir = tempfile.TemporaryDirectory()
         cls.html_path = Path(cls.temp_dir.name) / "index.html"
         cls.html_path.write_text("<h1>Builder test</h1>", encoding="utf-8")
+        cls.en_html_path = Path(cls.temp_dir.name) / "index.en.html"
+        cls.en_html_path.write_text("<h1>English builder test</h1>", encoding="utf-8")
         cls.original_html_path = builder.HTML_PATH
+        cls.original_en_html_path = builder.EN_HTML_PATH
         cls.original_log_message = builder.BuilderHandler.log_message
         builder.HTML_PATH = cls.html_path
+        builder.EN_HTML_PATH = cls.en_html_path
         builder.BuilderHandler.log_message = lambda *args: None
         cls.server = builder.ThreadingHTTPServer(
             ("127.0.0.1", 0),
@@ -299,6 +303,7 @@ class HttpServerTests(unittest.TestCase):
         cls.server.server_close()
         cls.thread.join(timeout=5)
         builder.HTML_PATH = cls.original_html_path
+        builder.EN_HTML_PATH = cls.original_en_html_path
         builder.BuilderHandler.log_message = cls.original_log_message
         cls.temp_dir.cleanup()
 
@@ -333,6 +338,29 @@ class HttpServerTests(unittest.TestCase):
         self.assertEqual(headers["X-Content-Type-Options"], "nosniff")
         self.assertEqual(headers["Referrer-Policy"], "no-referrer")
         self.assertIn("frame-ancestors 'none'", headers["Content-Security-Policy"])
+
+    def test_english_routes_serve_the_english_html(self) -> None:
+        for path in ["/en", "/en/", "/en.html", "/sing-box-config-builder.en.html"]:
+            with self.subTest(path=path):
+                status, _, body = self.request("GET", path)
+                self.assertEqual(status, 200)
+                self.assertEqual(body, b"<h1>English builder test</h1>")
+
+    def test_english_error_messages_are_localized(self) -> None:
+        self.assertEqual(
+            builder.localize_error_message(
+                "Разрешены только http:// и https:// ссылки",
+                "en",
+            ),
+            "Only http:// and https:// URLs are allowed",
+        )
+        status, _, body = self.request(
+            "POST",
+            "/api/fetch-subscription",
+            headers={"Accept-Language": "en"},
+        )
+        self.assertEqual(status, 400)
+        self.assertEqual(json.loads(body)["error"], "Invalid request size")
 
     def test_health_and_missing_routes(self) -> None:
         status, _, body = self.request("GET", "/api/health")

@@ -6,6 +6,7 @@
 
 - `sing-box-config-builder.template.html` — HTML-каркас;
 - `src/styles.css` — внешний вид;
+- `src/i18n.js` — общий словарь и применение переводов RU/EN;
 - `src/parser-normalization.js` — проверка и нормализация полей;
 - `src/parser-transports.js` — TLS и транспортные параметры;
 - `src/subscription-parser.js` — декодирование и разбор протоколов;
@@ -29,11 +30,13 @@ npm run build
 
 ```text
 sing-box-config-builder.html
+sing-box-config-builder.en.html
 sing-box-config-builder-local/sing-box-config-builder.html
+sing-box-config-builder-local/sing-box-config-builder.en.html
 ```
 
 Docker выполняет ту же сборку в отдельном Node-этапе, после чего переносит
-только готовый HTML в минимальный Python-образ.
+готовые русскую и английскую HTML-страницы в минимальный Python-образ.
 
 ## Проверка
 

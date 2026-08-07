@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="ru">
+<html lang="__HTML_LANG__">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Локальный генератор sing-box config.json для OpenWrt"
+      data-i18n-content="meta.description"
+      content="__META_DESCRIPTION__"
     />
     <title>Sing-box Config Builder</title>
     <style>
@@ -18,22 +19,17 @@ __APP_CSS__
         <div>
           <div class="eyebrow"><span class="pulse"></span> OpenWrt toolkit</div>
           <h1>Sing-box Config Builder</h1>
-          <p>
-            Собирает полный <strong>config.json</strong> из VPN-подписок,
-            оставляет DIRECT режимом по умолчанию, а мимо VPN отправляет только
-            сервисы из встроенных белых списков.
-          </p>
+          <p data-i18n-html="hero.description"></p>
         </div>
+        <nav class="language-switch" aria-label="Language">
+          <a href="sing-box-config-builder.html" data-locale-link="ru">RU</a>
+          <a href="sing-box-config-builder.en.html" data-locale-link="en">EN</a>
+        </nav>
       </header>
 
       <div class="notice">
-        <strong>Важно.</strong>
-        <span id="backendHelp">
-          Подписки содержат секретные ключи. Страница ничего не отправляет
-          сторонним сервисам и не сохраняет ссылки. При запуске через
-          <code>sing-box-config-builder.py</code> подписку скачивает локальный
-          Python, поэтому CORS не мешает.
-        </span>
+        <strong data-i18n="notice.title"></strong>
+        <span id="backendHelp" data-i18n-html="notice.body"></span>
       </div>
 
       <div class="layout">
@@ -41,83 +37,65 @@ __APP_CSS__
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>1. VPN-подписки</h2>
-                <p>Можно добавить любое количество источников и префикс имён.</p>
+                <h2 data-i18n="subscriptions.title"></h2>
+                <p data-i18n="subscriptions.description"></p>
               </div>
-              <span class="count" id="sourceSummary">0 узлов</span>
+              <span class="count" id="sourceSummary" data-i18n="summary.zeroNodes"></span>
             </div>
 
             <div class="source-list" id="sourceList"></div>
             <div class="toolbar">
-              <button class="btn btn-blue" id="addSource" type="button">
-                + Добавить подписку
-              </button>
+              <button class="btn btn-blue" id="addSource" type="button" data-i18n="subscriptions.add"></button>
             </div>
           </section>
 
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>2. Всегда напрямую</h2>
-                <p>
-                  Белые списки российских сервисов уже добавлены по умолчанию.
-                  Свои домены или URL можно добавить по одному на строку.
-                </p>
+                <h2 data-i18n="direct.title"></h2>
+                <p data-i18n="direct.description"></p>
               </div>
-              <span class="count" id="domainCount">0 доменов</span>
+              <span class="count" id="domainCount"></span>
             </div>
             <textarea
               id="directDomains"
               spellcheck="false"
-              aria-label="Домены прямого маршрута"
+              data-i18n-aria-label="direct.aria"
             ></textarea>
             <div class="toolbar">
-              <button class="btn" id="resetDomains" type="button">
-                Вернуть базовый список
-              </button>
-              <button class="btn" id="sortDomains" type="button">
-                Очистить дубли и сортировать
-              </button>
+              <button class="btn" id="resetDomains" type="button" data-i18n="direct.reset"></button>
+              <button class="btn" id="sortDomains" type="button" data-i18n="direct.sort"></button>
             </div>
           </section>
 
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>3. Настройки</h2>
-                <p>Настройки подходят для sing-box версии 1.12.17.</p>
+                <h2 data-i18n="settings.title"></h2>
+                <p data-i18n="settings.description"></p>
               </div>
             </div>
             <div class="settings-grid">
               <label>
-                Проверка туннелей
+                <span data-i18n="settings.healthInterval"></span>
                 <input id="healthInterval" value="20m" />
               </label>
               <label>
-                Адрес Yacd API
+                <span data-i18n="settings.controllerAddress"></span>
                 <input id="controllerAddress" value="0.0.0.0:9090" />
               </label>
               <label>
-                Пароль Yacd
+                <span data-i18n="settings.controllerSecret"></span>
                 <input id="controllerSecret" autocomplete="new-password" />
               </label>
               <label>
-                Имя TUN
+                <span data-i18n="settings.tunName"></span>
                 <input id="tunName" value="singtun0" />
               </label>
             </div>
-            <button class="build-button" id="buildConfig" type="button">
-              Собрать полный config.json
-            </button>
-            <div class="status warn">
-              Адрес <code>0.0.0.0:9090</code> открывает Yacd для устройств в
-              домашней сети. Пароль берётся из рабочего конфига и сохраняется
-              в браузере. Команда удаления <code>cache.db</code> ниже один раз
-              сбросит старый выбор на <code>DIRECT</code>.
-            </div>
-            <div class="status" id="buildStatus">
-              Сначала загрузите хотя бы одну подписку.
-            </div>
+            <button class="build-button" id="buildConfig" type="button" data-i18n="settings.build"></button>
+            <div class="status warn" data-i18n-html="settings.warning"></div>
+            <div class="status" id="buildStatus" data-i18n="settings.initialStatus"></div>
           </section>
         </div>
 
@@ -125,23 +103,23 @@ __APP_CSS__
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>Готовый конфиг</h2>
-                <p>DIRECT выбран по умолчанию, AUTO проверяет все узлы.</p>
+                <h2 data-i18n="output.title"></h2>
+                <p data-i18n="output.description"></p>
               </div>
             </div>
 
             <div class="stats">
               <div class="stat">
                 <span class="stat-value" id="nodeStat">0</span>
-                <span class="stat-label">туннелей</span>
+                <span class="stat-label" data-i18n="output.tunnels"></span>
               </div>
               <div class="stat">
                 <span class="stat-value" id="skippedStat">0</span>
-                <span class="stat-label">пропущено</span>
+                <span class="stat-label" data-i18n="output.skipped"></span>
               </div>
               <div class="stat">
                 <span class="stat-value" id="directStat">0</span>
-                <span class="stat-label">DIRECT доменов</span>
+                <span class="stat-label" data-i18n="output.directDomains"></span>
               </div>
             </div>
             <div class="status warn hidden" id="skippedDetails"></div>
@@ -150,27 +128,20 @@ __APP_CSS__
               id="jsonOutput"
               spellcheck="false"
               readonly
-              placeholder="Здесь появится полный JSON…"
-              aria-label="Готовый config.json"
+              data-i18n-placeholder="output.placeholder"
+              data-i18n-aria-label="output.aria"
             ></textarea>
             <div class="output-actions">
-              <button class="btn btn-primary" id="downloadConfig" type="button" disabled>
-                Скачать config.json
-              </button>
-              <button class="btn" id="copyConfig" type="button" disabled>
-                Копировать JSON
-              </button>
+              <button class="btn btn-primary" id="downloadConfig" type="button" disabled data-i18n="output.download"></button>
+              <button class="btn" id="copyConfig" type="button" disabled data-i18n="output.copy"></button>
             </div>
           </section>
 
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>Команды после загрузки</h2>
-                <p>
-                  Положите файл в <code>/etc/sing-box/config.json</code>, затем
-                  выполните:
-                </p>
+                <h2 data-i18n="commands.title"></h2>
+                <p data-i18n-html="commands.description"></p>
               </div>
             </div>
             <pre class="commands" id="commands">rm -f /etc/sing-box/cache.db
@@ -180,21 +151,14 @@ sing-box check -c /etc/sing-box/config.json
 /etc/init.d/sing-box enable
 /etc/init.d/sing-box restart</pre>
             <div class="output-actions">
-              <button class="btn" id="copyCommands" type="button">
-                Копировать команды
-              </button>
+              <button class="btn" id="copyCommands" type="button" data-i18n="commands.copy"></button>
             </div>
-            <p class="footer-note">
-              Пустой вывод команды <code>sing-box check</code> означает, что
-              конфиг прошёл проверку.
-            </p>
-            <h3>Если после запуска пропал интернет</h3>
+            <p class="footer-note" data-i18n-html="commands.checkHint"></p>
+            <h3 data-i18n="commands.recoveryTitle"></h3>
             <pre class="commands" id="recoveryCommands">/etc/init.d/sing-box stop
 /etc/init.d/sing-box disable</pre>
             <div class="output-actions">
-              <button class="btn btn-danger" id="copyRecovery" type="button">
-                Копировать аварийное отключение
-              </button>
+              <button class="btn btn-danger" id="copyRecovery" type="button" data-i18n="commands.recoveryCopy"></button>
             </div>
           </section>
         </aside>
@@ -206,6 +170,8 @@ sing-box check -c /etc/sing-box/config.json
     <script type="application/json" id="baseConfig">__BASE_CONFIG_JSON__</script>
     <script>
       "use strict";
+
+__I18N_JS__
 
 __PARSER_NORMALIZATION_JS__
 

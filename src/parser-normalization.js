@@ -127,7 +127,9 @@ function entryName(entry, index, prefix) {
   } else if (entry?.tag) {
     return `${prefix}${entry.tag}`;
   }
-  return `${prefix}${String(index + 1).padStart(2, "0")} Узел`;
+  return `${prefix}${t("node.generated", {
+    number: String(index + 1).padStart(2, "0"),
+  })}`;
 }
 
 function unsupportedNode(entry, index, prefix, reason) {

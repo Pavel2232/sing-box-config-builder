@@ -72,7 +72,19 @@ test("build embeds a safe base config and clears old VPN outbounds", () => {
       ),
       "utf8",
     );
+    const englishHtml = fs.readFileSync(
+      path.join(fixture.root, "sing-box-config-builder.en.html"),
+      "utf8",
+    );
+    const dockerEnglishHtml = fs.readFileSync(
+      path.join(
+        fixture.root,
+        "sing-box-config-builder-local/sing-box-config-builder.en.html",
+      ),
+      "utf8",
+    );
     assert.equal(rootHtml, dockerHtml);
+    assert.equal(englishHtml, dockerEnglishHtml);
     assert.ok(!rootHtml.includes("old-secret-node"));
     assert.ok(rootHtml.includes("\\u003c/script\\u003e\\u0026"));
     assert.deepEqual(embeddedConfig(rootHtml), {
@@ -112,16 +124,35 @@ test("checked-in generated HTML files are synchronized and executable", () => {
     ),
     "utf8",
   );
+  const englishHtml = fs.readFileSync(
+    path.join(projectRoot, "sing-box-config-builder.en.html"),
+    "utf8",
+  );
+  const dockerEnglishHtml = fs.readFileSync(
+    path.join(
+      projectRoot,
+      "sing-box-config-builder-local/sing-box-config-builder.en.html",
+    ),
+    "utf8",
+  );
   assert.equal(rootHtml, dockerHtml);
+  assert.equal(englishHtml, dockerEnglishHtml);
+  assert.match(rootHtml, /<html lang="ru">/);
+  assert.match(englishHtml, /<html lang="en">/);
+  assert.match(englishHtml, /Build complete config\.json/);
   assert.ok(!rootHtml.includes("__BASE_CONFIG_JSON__"));
+  assert.ok(!englishHtml.includes("__BASE_CONFIG_JSON__"));
 
   const config = embeddedConfig(rootHtml);
   assert.deepEqual(config.outbounds, []);
   assert.ok(config.inbounds.some((inbound) => inbound.type === "tun"));
   assert.ok(config.route.rule_set[0].rules[0].domain_suffix.length > 0);
   assert.ok(config.experimental.clash_api.secret.length >= 8);
+  assert.deepEqual(embeddedConfig(englishHtml), config);
 
-  const scripts = [...rootHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)];
-  assert.equal(scripts.length, 1);
-  assert.doesNotThrow(() => new Function(scripts[0][1]));
+  for (const html of [rootHtml, englishHtml]) {
+    const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+    assert.equal(scripts.length, 1);
+    assert.doesNotThrow(() => new Function(scripts[0][1]));
+  }
 });

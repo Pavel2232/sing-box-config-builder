@@ -1,5 +1,11 @@
 # Sing-box Config Builder
 
+**Русский** · [English](README.en.md)
+
+[![CI](https://github.com/Pavel2232/sing-box-config-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/Pavel2232/sing-box-config-builder/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-45e0a8.svg)](LICENSE)
+[![sing-box 1.12.17](https://img.shields.io/badge/sing--box-1.12.17-58a6ff.svg)](https://github.com/SagerNet/sing-box)
+
 <p align="center">
   <img
     src="docs/assets/builder-preview.png"
@@ -39,7 +45,8 @@ touch sing-box-config-builder-local/.happ-hwid
 docker compose up -d --build
 ```
 
-Откройте **http://127.0.0.1:18765/**. Контейнер работает в фоне и
+Откройте **http://127.0.0.1:18765/**. Английская версия интерфейса доступна
+по адресу **http://127.0.0.1:18765/en/**. Контейнер работает в фоне и
 перезапускается автоматически, пока Docker запущен.
 
 Проверка:
@@ -103,8 +110,9 @@ sing-box-config-builder-local/.happ-hwid
 python3 sing-box-config-builder.py
 ```
 
-Страница откроется по адресу **http://127.0.0.1:8765/**. На macOS тот же
-сервер запускает `start-sing-box-builder.command`.
+Страница откроется по адресу **http://127.0.0.1:8765/**, английская версия —
+по адресу **http://127.0.0.1:8765/en/**. На macOS тот же сервер запускает
+`start-sing-box-builder.command`.
 
 Запуск без открытия браузера:
 
@@ -142,6 +150,7 @@ sing-box check -c /etc/sing-box/config.json
 |---|---|
 | `sing-box-config-builder.template.html` | Небольшой HTML-каркас |
 | `src/styles.css` | Стили интерфейса |
+| `src/i18n.js` | Общие переводы русского и английского интерфейса |
 | `src/parser-normalization.js` | Проверка и нормализация полей узлов |
 | `src/parser-transports.js` | Преобразование TLS и транспортов |
 | `src/subscription-parser.js` | Декодирование подписок и протоколов |
@@ -157,7 +166,8 @@ sing-box check -c /etc/sing-box/config.json
 npm run build
 ```
 
-Сгенерированные `sing-box-config-builder.html` и файлы внутри
+Сгенерированные `sing-box-config-builder.html`,
+`sing-box-config-builder.en.html` и файлы внутри
 `sing-box-config-builder-local/` вручную не редактируются.
 
 Текущие тесты запускаются без браузерного/UI-раннера:
@@ -170,6 +180,18 @@ npm test
 [docs/development.md](docs/development.md), частые ошибки — в
 [docs/troubleshooting.md](docs/troubleshooting.md).
 
+## Участие в проекте
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — локальный запуск, правила изменений и PR;
+- [SUPPORT.md](SUPPORT.md) — куда обращаться с ошибкой, идеей или вопросом;
+- [SECURITY.md](SECURITY.md) — приватное сообщение об уязвимости;
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) — правила общения;
+- [GOVERNANCE.md](GOVERNANCE.md) — принятие решений в проекте;
+- [CHANGELOG.md](CHANGELOG.md) — заметные изменения.
+
+Перед публикацией issue или PR обязательно удалите реальные ссылки подписок,
+ключи, готовые конфиги и HWID.
+
 ## Безопасность
 
 - подписки скачивает только локальный Python-сервер;
@@ -179,6 +201,9 @@ npm test
 - контейнер работает без root, с read-only файловой системой и
   `no-new-privileges`;
 - порт Yacd нельзя публиковать в интернет.
+
+Уязвимости сообщайте по инструкции из [SECURITY.md](SECURITY.md), а не в
+публичном issue.
 
 ## Лицензия
 

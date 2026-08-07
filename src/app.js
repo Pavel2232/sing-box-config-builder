@@ -135,11 +135,11 @@ function normalizedDomains() {
 
 function updateDomainCount() {
   const count = normalizedDomains().length;
-  elements.domainCount.textContent = `${count} доменов`;
+  elements.domainCount.textContent = t("domain.count", { count });
 }
 
 function isRussianNodeTag(tag) {
-  const value = String(tag || "").toLocaleLowerCase("ru-RU");
+  const value = String(tag || "").toLocaleLowerCase(currentNumberLocale);
   return (
     value.includes("🇷🇺") ||
     value.includes("росси") ||
@@ -152,8 +152,7 @@ function invalidateGeneratedConfig() {
   generatedConfig = null;
   elements.downloadConfig.disabled = true;
   elements.copyConfig.disabled = true;
-  elements.buildStatus.textContent =
-    "Выбор туннелей изменён — соберите config.json заново.";
+  elements.buildStatus.textContent = t("config.invalidated");
   elements.buildStatus.className = "status warn";
 }
 
@@ -167,14 +166,10 @@ function validateSettings() {
   const interval = elements.healthInterval.value.trim();
   const intervalMs = parseDuration(interval);
   if (!intervalMs) {
-    return settingError(
-      "Интервал должен выглядеть как 10m, 20m или 1h.",
-    );
+    return settingError(t("validation.intervalFormat"));
   }
   if (intervalMs < MIN_HEALTH_INTERVAL_MS) {
-    return settingError(
-      "Для большого списка туннелей интервал должен быть не меньше 10m.",
-    );
+    return settingError(t("validation.intervalMinimum"));
   }
 
   const controller = elements.controllerAddress.value.trim();
@@ -185,23 +180,19 @@ function validateSettings() {
     controllerPort < 1 ||
     controllerPort > 65535
   ) {
-    return settingError(
-      "Адрес Yacd должен выглядеть как 0.0.0.0:9090.",
-    );
+    return settingError(t("validation.controller"));
   }
 
   const tunName = elements.tunName.value.trim();
   if (!/^[a-zA-Z0-9_.-]{1,15}$/.test(tunName)) {
-    return settingError(
-      "Имя TUN: от 1 до 15 букв, цифр, точек, дефисов или подчёркиваний.",
-    );
+    return settingError(t("validation.tunName"));
   }
 
   if (!elements.controllerSecret.value) {
     elements.controllerSecret.value = randomSecret();
   }
   if (elements.controllerSecret.value.length < 8) {
-    return settingError("Пароль Yacd должен содержать минимум 8 символов.");
+    return settingError(t("validation.secret"));
   }
   persistSettings();
   return true;
@@ -226,8 +217,7 @@ function buildConfig() {
     });
   }
   if (foundCount === 0) {
-    elements.buildStatus.textContent =
-      "Не найдено ни одного загруженного узла.";
+    elements.buildStatus.textContent = t("config.noLoadedNodes");
     elements.buildStatus.className = "status bad";
     return;
   }
@@ -240,14 +230,14 @@ function buildConfig() {
   if (nodes.length === 0) {
     elements.buildStatus.textContent =
       disabledCount > 0
-        ? "Выберите хотя бы один поддерживаемый туннель."
-        : `Найдено ${foundCount} узлов, но ни один не поддерживается sing-box. Для XHTTP используйте PassWall2 + Xray-core.`;
+        ? t("config.chooseTunnel")
+        : t("config.noSupported", { found: foundCount });
     elements.buildStatus.className = "status bad";
     elements.skippedStat.textContent = skippedNodes.length + disabledCount;
     elements.skippedDetails.textContent =
       disabledCount > 0
-        ? `Отключено вручную: ${disabledCount}.`
-        : "XHTTP нельзя превратить в рабочий sing-box outbound.";
+        ? t("config.disabled", { count: disabledCount })
+        : t("config.xhttpOnly");
     elements.skippedDetails.classList.remove("hidden");
     return;
   }
@@ -302,27 +292,28 @@ function buildConfig() {
       reasons.set(item.reason, (reasons.get(item.reason) || 0) + 1);
     }
     if (disabledCount) {
-      reasons.set("отключено вручную", disabledCount);
+      reasons.set(t("config.disabledReason"), disabledCount);
     }
-    elements.skippedDetails.textContent =
-      "Не добавлены: " +
-      [...reasons]
+    elements.skippedDetails.textContent = t("config.notAdded", {
+      reasons: [...reasons]
         .map(([reason, count]) => `${reason} — ${count}`)
-        .join("; ") +
-      ".";
+        .join("; "),
+    });
     elements.skippedDetails.classList.remove("hidden");
   } else {
     elements.skippedDetails.textContent = "";
     elements.skippedDetails.classList.add("hidden");
   }
   elements.directStat.textContent = domains.length;
-  elements.buildStatus.textContent =
-    `Готово: ${nodes.length} рабочих форматов, DIRECT по умолчанию` +
-    (skippedNodes.length || disabledCount
-      ? `, не добавлено ${skippedNodes.length + disabledCount}.`
-      : ".");
+  const skippedCount = skippedNodes.length + disabledCount;
+  elements.buildStatus.textContent = t("config.ready", {
+    count: nodes.length,
+    suffix: skippedCount
+      ? t("config.skippedSuffix", { count: skippedCount })
+      : t("config.noSkippedSuffix"),
+  });
   elements.buildStatus.className = "status ok";
-  showToast("config.json собран");
+  showToast(t("toast.built"));
 }
 
 function downloadConfig() {
@@ -378,7 +369,7 @@ document.getElementById("resetDomains").addEventListener("click", () => {
 document.getElementById("sortDomains").addEventListener("click", () => {
   elements.directDomains.value = normalizedDomains().join("\n");
   updateDomainCount();
-  showToast("Список очищен и отсортирован");
+  showToast(t("toast.sorted"));
 });
 document
   .getElementById("buildConfig")
@@ -386,18 +377,18 @@ document
 elements.downloadConfig.addEventListener("click", downloadConfig);
 elements.copyConfig.addEventListener("click", () => {
   if (generatedConfig) {
-    copyText(generatedConfig, "JSON скопирован");
+    copyText(generatedConfig, t("toast.jsonCopied"));
   }
 });
 document.getElementById("copyCommands").addEventListener("click", () => {
   copyText(
     document.getElementById("commands").textContent,
-    "Команды скопированы",
+    t("toast.commandsCopied"),
   );
 });
 document.getElementById("copyRecovery").addEventListener("click", () => {
   copyText(
     document.getElementById("recoveryCommands").textContent,
-    "Команды отключения скопированы",
+    t("toast.recoveryCopied"),
   );
 });

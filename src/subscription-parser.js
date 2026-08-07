@@ -18,7 +18,7 @@ function decodeBase64(value) {
 
 function decodeSubscription(text) {
   const input = text.trim();
-  if (!input) throw new Error("Подписка пустая");
+  if (!input) throw new Error(t("subscription.empty"));
 
   try {
     const parsed = JSON.parse(input);
@@ -46,7 +46,7 @@ function decodeSubscription(text) {
           ["vless", "trojan", "hysteria2"].includes(item?.type),
         );
         if (nodes.length === 0) {
-          throw new Error("В JSON sing-box нет поддерживаемых узлов");
+          throw new Error(t("subscription.noSupportedJsonNodes"));
         }
         return nodes;
       }
@@ -66,7 +66,7 @@ function decodeSubscription(text) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  if (links.length === 0) throw new Error("В подписке нет узлов");
+  if (links.length === 0) throw new Error(t("subscription.noNodes"));
   return links;
 }
 
@@ -75,7 +75,7 @@ function parseLink(link, index, prefix) {
   try {
     uri = new URL(link);
   } catch {
-    return unsupportedNode(link, index, prefix, "некорректная ссылка");
+    return unsupportedNode(link, index, prefix, t("reason.invalidLink"));
   }
 
   const scheme = uri.protocol.slice(0, -1);
@@ -88,12 +88,12 @@ function parseLink(link, index, prefix) {
       link,
       index,
       prefix,
-      "некорректный или локальный адрес сервера",
+      t("reason.invalidServer"),
     );
   }
   const rawServerName = params.get("sni");
   if (rawServerName && !normalizeServerHost(rawServerName)) {
-    return unsupportedNode(link, index, prefix, "некорректный SNI");
+    return unsupportedNode(link, index, prefix, t("reason.invalidSni"));
   }
 
   if (scheme === "vless") {
@@ -105,13 +105,15 @@ function parseLink(link, index, prefix) {
         prefix,
         transportInfo.sourceType === "xhttp" ||
           transportInfo.sourceType === "splithttp"
-          ? "XHTTP не поддерживается sing-box"
-          : `транспорт ${transportInfo.sourceType} не поддерживается`,
+          ? t("reason.xhttpUnsupported")
+          : t("reason.unsupportedTransport", {
+              transport: transportInfo.sourceType,
+            }),
       );
     }
     const uuid = normalizeVlessUuid(uri.username);
     if (!uuid) {
-      return unsupportedNode(link, index, prefix, "некорректный UUID VLESS");
+      return unsupportedNode(link, index, prefix, t("reason.invalidVlessUuid"));
     }
     const outbound = {
       type: "vless",
@@ -126,7 +128,7 @@ function parseLink(link, index, prefix) {
     if (packetEncoding) outbound.packet_encoding = packetEncoding;
     const tls = tlsFromLink(uri, server);
     if (tls === null) {
-      return unsupportedNode(link, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(link, index, prefix, t("reason.invalidTlsReality"));
     }
     if (tls) outbound.tls = tls;
     if (transportInfo.transport) {
@@ -142,7 +144,9 @@ function parseLink(link, index, prefix) {
         link,
         index,
         prefix,
-        `транспорт ${transportInfo.sourceType} не поддерживается`,
+        t("reason.unsupportedTransport", {
+          transport: transportInfo.sourceType,
+        }),
       );
     }
     const outbound = {
@@ -154,7 +158,7 @@ function parseLink(link, index, prefix) {
     };
     const tls = tlsFromLink(uri, server);
     if (tls === null) {
-      return unsupportedNode(link, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(link, index, prefix, t("reason.invalidTlsReality"));
     }
     outbound.tls = tls || { enabled: true, server_name: server };
     if (transportInfo.transport) {
@@ -187,7 +191,9 @@ function parseLink(link, index, prefix) {
     link,
     index,
     prefix,
-    `протокол ${scheme || "не определён"} не поддерживается`,
+    t("reason.unsupportedProtocol", {
+      protocol: scheme || t("reason.unknownProtocol"),
+    }),
   );
 }
 
@@ -198,7 +204,7 @@ function parseXray(config, index, prefix) {
       config,
       index,
       prefix,
-      "в JSON отсутствует outbound",
+      t("reason.missingOutbound"),
     );
   }
   const protocol = sourceOutbound.protocol;
@@ -213,7 +219,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный VLESS",
+        t("reason.invalidVless"),
       );
     }
     const transportInfo = transportFromXray(stream);
@@ -224,8 +230,10 @@ function parseXray(config, index, prefix) {
         prefix,
         transportInfo.sourceType === "xhttp" ||
           transportInfo.sourceType === "splithttp"
-          ? "XHTTP не поддерживается sing-box"
-          : `транспорт ${transportInfo.sourceType} не поддерживается`,
+          ? t("reason.xhttpUnsupported")
+          : t("reason.unsupportedTransport", {
+              transport: transportInfo.sourceType,
+            }),
       );
     }
     const server = normalizeServerHost(destination.address);
@@ -236,7 +244,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный адрес, порт или UUID VLESS",
+        t("reason.invalidVlessTarget"),
       );
     }
     const outbound = {
@@ -252,7 +260,12 @@ function parseXray(config, index, prefix) {
     }
     const tls = tlsFromXray(stream, server);
     if (tls === null) {
-      return unsupportedNode(config, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidTlsReality"),
+      );
     }
     if (tls) outbound.tls = tls;
     if (transportInfo.transport) {
@@ -268,7 +281,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный Trojan",
+        t("reason.invalidTrojan"),
       );
     }
     const transportInfo = transportFromXray(stream);
@@ -277,7 +290,9 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        `транспорт ${transportInfo.sourceType} не поддерживается`,
+        t("reason.unsupportedTransport", {
+          transport: transportInfo.sourceType,
+        }),
       );
     }
     const server = normalizeServerHost(destination.address);
@@ -287,7 +302,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный Trojan",
+        t("reason.invalidTrojan"),
       );
     }
     const outbound = {
@@ -299,7 +314,12 @@ function parseXray(config, index, prefix) {
     };
     const tls = tlsFromXray(stream, server);
     if (tls === null) {
-      return unsupportedNode(config, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidTlsReality"),
+      );
     }
     if (tls) outbound.tls = tls;
     if (transportInfo.transport) {
@@ -318,7 +338,12 @@ function parseXray(config, index, prefix) {
     const server = normalizeServerHost(settings.address);
     const serverPort = normalizeServerPort(settings.port);
     if (!server || !serverPort) {
-      return unsupportedNode(config, index, prefix, "некорректный Hysteria2");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidHysteria2"),
+      );
     }
     const outbound = {
       type: "hysteria2",
@@ -333,7 +358,12 @@ function parseXray(config, index, prefix) {
     };
     const tls = tlsFromXray(stream, server);
     if (tls === null) {
-      return unsupportedNode(config, index, prefix, "некорректный TLS Hysteria2");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidHysteria2Tls"),
+      );
     }
     if (tls) outbound.tls = tls;
     return {
@@ -347,7 +377,9 @@ function parseXray(config, index, prefix) {
     config,
     index,
     prefix,
-    `протокол ${protocol || "не определён"} не поддерживается`,
+    t("reason.unsupportedProtocol", {
+      protocol: protocol || t("reason.unknownProtocol"),
+    }),
   );
 }
 
@@ -361,7 +393,7 @@ function parseSingBoxOutbound(source, index, prefix) {
       source,
       index,
       prefix,
-      "некорректный или локальный адрес сервера",
+      t("reason.invalidServer"),
     );
   }
 
@@ -373,8 +405,10 @@ function parseSingBoxOutbound(source, index, prefix) {
       prefix,
       transportInfo.sourceType === "xhttp" ||
         transportInfo.sourceType === "splithttp"
-        ? "XHTTP не поддерживается sing-box"
-        : `транспорт ${transportInfo.sourceType} не поддерживается`,
+        ? t("reason.xhttpUnsupported")
+        : t("reason.unsupportedTransport", {
+            transport: transportInfo.sourceType,
+          }),
     );
   }
 
@@ -385,7 +419,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный UUID VLESS",
+        t("reason.invalidVlessUuid"),
       );
     }
     const outbound = {
@@ -409,7 +443,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный TLS/Reality",
+        t("reason.invalidTlsReality"),
       );
     }
     if (tls) outbound.tls = tls;
@@ -426,7 +460,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "в Trojan отсутствует пароль",
+        t("reason.missingTrojanPassword"),
       );
     }
     const outbound = {
@@ -442,7 +476,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный TLS/Reality",
+        t("reason.invalidTlsReality"),
       );
     }
     outbound.tls = tls || { enabled: true, server_name: server };
@@ -459,7 +493,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "в Hysteria2 отсутствует пароль",
+        t("reason.missingHysteria2Password"),
       );
     }
     const tls = tlsFromSingBox(source.tls, server);
@@ -468,7 +502,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный TLS Hysteria2",
+        t("reason.invalidHysteria2Tls"),
       );
     }
     const outbound = {
@@ -495,7 +529,9 @@ function parseSingBoxOutbound(source, index, prefix) {
     source,
     index,
     prefix,
-    `протокол ${type || "не определён"} не поддерживается`,
+    t("reason.unsupportedProtocol", {
+      protocol: type || t("reason.unknownProtocol"),
+    }),
   );
 }
 

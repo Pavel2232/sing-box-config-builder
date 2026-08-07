@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
+      data-i18n-content="meta.description"
       content="Локальный генератор sing-box config.json для OpenWrt"
     />
     <title>Sing-box Config Builder</title>
@@ -123,6 +124,35 @@ h3 {
   color: var(--muted);
   line-height: 1.6;
 }
+
+.language-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(3, 12, 18, 0.52);
+}
+
+.language-switch a {
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.language-switch a:hover {
+  color: var(--text);
+}
+
+.language-switch a.active {
+  background: rgba(69, 224, 168, 0.13);
+  color: var(--accent);
+}
+
 .notice {
   margin-bottom: 18px;
   padding: 15px 17px;
@@ -568,7 +598,11 @@ summary {
   }
 
   .hero {
-    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .language-switch {
+    align-self: flex-start;
   }
 }
 
@@ -605,22 +639,17 @@ summary {
         <div>
           <div class="eyebrow"><span class="pulse"></span> OpenWrt toolkit</div>
           <h1>Sing-box Config Builder</h1>
-          <p>
-            Собирает полный <strong>config.json</strong> из VPN-подписок,
-            оставляет DIRECT режимом по умолчанию, а мимо VPN отправляет только
-            сервисы из встроенных белых списков.
-          </p>
+          <p data-i18n-html="hero.description"></p>
         </div>
+        <nav class="language-switch" aria-label="Language">
+          <a href="sing-box-config-builder.html" data-locale-link="ru">RU</a>
+          <a href="sing-box-config-builder.en.html" data-locale-link="en">EN</a>
+        </nav>
       </header>
 
       <div class="notice">
-        <strong>Важно.</strong>
-        <span id="backendHelp">
-          Подписки содержат секретные ключи. Страница ничего не отправляет
-          сторонним сервисам и не сохраняет ссылки. При запуске через
-          <code>sing-box-config-builder.py</code> подписку скачивает локальный
-          Python, поэтому CORS не мешает.
-        </span>
+        <strong data-i18n="notice.title"></strong>
+        <span id="backendHelp" data-i18n-html="notice.body"></span>
       </div>
 
       <div class="layout">
@@ -628,83 +657,65 @@ summary {
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>1. VPN-подписки</h2>
-                <p>Можно добавить любое количество источников и префикс имён.</p>
+                <h2 data-i18n="subscriptions.title"></h2>
+                <p data-i18n="subscriptions.description"></p>
               </div>
-              <span class="count" id="sourceSummary">0 узлов</span>
+              <span class="count" id="sourceSummary" data-i18n="summary.zeroNodes"></span>
             </div>
 
             <div class="source-list" id="sourceList"></div>
             <div class="toolbar">
-              <button class="btn btn-blue" id="addSource" type="button">
-                + Добавить подписку
-              </button>
+              <button class="btn btn-blue" id="addSource" type="button" data-i18n="subscriptions.add"></button>
             </div>
           </section>
 
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>2. Всегда напрямую</h2>
-                <p>
-                  Белые списки российских сервисов уже добавлены по умолчанию.
-                  Свои домены или URL можно добавить по одному на строку.
-                </p>
+                <h2 data-i18n="direct.title"></h2>
+                <p data-i18n="direct.description"></p>
               </div>
-              <span class="count" id="domainCount">0 доменов</span>
+              <span class="count" id="domainCount"></span>
             </div>
             <textarea
               id="directDomains"
               spellcheck="false"
-              aria-label="Домены прямого маршрута"
+              data-i18n-aria-label="direct.aria"
             ></textarea>
             <div class="toolbar">
-              <button class="btn" id="resetDomains" type="button">
-                Вернуть базовый список
-              </button>
-              <button class="btn" id="sortDomains" type="button">
-                Очистить дубли и сортировать
-              </button>
+              <button class="btn" id="resetDomains" type="button" data-i18n="direct.reset"></button>
+              <button class="btn" id="sortDomains" type="button" data-i18n="direct.sort"></button>
             </div>
           </section>
 
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>3. Настройки</h2>
-                <p>Настройки подходят для sing-box версии 1.12.17.</p>
+                <h2 data-i18n="settings.title"></h2>
+                <p data-i18n="settings.description"></p>
               </div>
             </div>
             <div class="settings-grid">
               <label>
-                Проверка туннелей
+                <span data-i18n="settings.healthInterval"></span>
                 <input id="healthInterval" value="20m" />
               </label>
               <label>
-                Адрес Yacd API
+                <span data-i18n="settings.controllerAddress"></span>
                 <input id="controllerAddress" value="0.0.0.0:9090" />
               </label>
               <label>
-                Пароль Yacd
+                <span data-i18n="settings.controllerSecret"></span>
                 <input id="controllerSecret" autocomplete="new-password" />
               </label>
               <label>
-                Имя TUN
+                <span data-i18n="settings.tunName"></span>
                 <input id="tunName" value="singtun0" />
               </label>
             </div>
-            <button class="build-button" id="buildConfig" type="button">
-              Собрать полный config.json
-            </button>
-            <div class="status warn">
-              Адрес <code>0.0.0.0:9090</code> открывает Yacd для устройств в
-              домашней сети. Пароль берётся из рабочего конфига и сохраняется
-              в браузере. Команда удаления <code>cache.db</code> ниже один раз
-              сбросит старый выбор на <code>DIRECT</code>.
-            </div>
-            <div class="status" id="buildStatus">
-              Сначала загрузите хотя бы одну подписку.
-            </div>
+            <button class="build-button" id="buildConfig" type="button" data-i18n="settings.build"></button>
+            <div class="status warn" data-i18n-html="settings.warning"></div>
+            <div class="status" id="buildStatus" data-i18n="settings.initialStatus"></div>
           </section>
         </div>
 
@@ -712,23 +723,23 @@ summary {
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>Готовый конфиг</h2>
-                <p>DIRECT выбран по умолчанию, AUTO проверяет все узлы.</p>
+                <h2 data-i18n="output.title"></h2>
+                <p data-i18n="output.description"></p>
               </div>
             </div>
 
             <div class="stats">
               <div class="stat">
                 <span class="stat-value" id="nodeStat">0</span>
-                <span class="stat-label">туннелей</span>
+                <span class="stat-label" data-i18n="output.tunnels"></span>
               </div>
               <div class="stat">
                 <span class="stat-value" id="skippedStat">0</span>
-                <span class="stat-label">пропущено</span>
+                <span class="stat-label" data-i18n="output.skipped"></span>
               </div>
               <div class="stat">
                 <span class="stat-value" id="directStat">0</span>
-                <span class="stat-label">DIRECT доменов</span>
+                <span class="stat-label" data-i18n="output.directDomains"></span>
               </div>
             </div>
             <div class="status warn hidden" id="skippedDetails"></div>
@@ -737,27 +748,20 @@ summary {
               id="jsonOutput"
               spellcheck="false"
               readonly
-              placeholder="Здесь появится полный JSON…"
-              aria-label="Готовый config.json"
+              data-i18n-placeholder="output.placeholder"
+              data-i18n-aria-label="output.aria"
             ></textarea>
             <div class="output-actions">
-              <button class="btn btn-primary" id="downloadConfig" type="button" disabled>
-                Скачать config.json
-              </button>
-              <button class="btn" id="copyConfig" type="button" disabled>
-                Копировать JSON
-              </button>
+              <button class="btn btn-primary" id="downloadConfig" type="button" disabled data-i18n="output.download"></button>
+              <button class="btn" id="copyConfig" type="button" disabled data-i18n="output.copy"></button>
             </div>
           </section>
 
           <section class="card">
             <div class="card-head">
               <div>
-                <h2>Команды после загрузки</h2>
-                <p>
-                  Положите файл в <code>/etc/sing-box/config.json</code>, затем
-                  выполните:
-                </p>
+                <h2 data-i18n="commands.title"></h2>
+                <p data-i18n-html="commands.description"></p>
               </div>
             </div>
             <pre class="commands" id="commands">rm -f /etc/sing-box/cache.db
@@ -767,21 +771,14 @@ sing-box check -c /etc/sing-box/config.json
 /etc/init.d/sing-box enable
 /etc/init.d/sing-box restart</pre>
             <div class="output-actions">
-              <button class="btn" id="copyCommands" type="button">
-                Копировать команды
-              </button>
+              <button class="btn" id="copyCommands" type="button" data-i18n="commands.copy"></button>
             </div>
-            <p class="footer-note">
-              Пустой вывод команды <code>sing-box check</code> означает, что
-              конфиг прошёл проверку.
-            </p>
-            <h3>Если после запуска пропал интернет</h3>
+            <p class="footer-note" data-i18n-html="commands.checkHint"></p>
+            <h3 data-i18n="commands.recoveryTitle"></h3>
             <pre class="commands" id="recoveryCommands">/etc/init.d/sing-box stop
 /etc/init.d/sing-box disable</pre>
             <div class="output-actions">
-              <button class="btn btn-danger" id="copyRecovery" type="button">
-                Копировать аварийное отключение
-              </button>
+              <button class="btn btn-danger" id="copyRecovery" type="button" data-i18n="commands.recoveryCopy"></button>
             </div>
           </section>
         </aside>
@@ -793,6 +790,334 @@ sing-box check -c /etc/sing-box/config.json
     <script type="application/json" id="baseConfig">{"log":{"level":"info","timestamp":true},"dns":{"servers":[{"type":"https","tag":"dns-direct","server":"1.1.1.1","server_port":443,"path":"/dns-query","tls":{"enabled":true,"server_name":"cloudflare-dns.com"}}],"final":"dns-direct","strategy":"ipv4_only"},"inbounds":[{"type":"tun","tag":"tun-in","interface_name":"singtun0","address":["172.19.0.1/30"],"mtu":1500,"auto_route":true,"auto_redirect":true,"strict_route":false,"stack":"system","route_exclude_address":["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16","100.64.0.0/10","169.254.0.0/16","224.0.0.0/4","fc00::/7","fe80::/10"]}],"outbounds":[],"route":{"rules":[{"action":"sniff"},{"protocol":"dns","action":"hijack-dns"},{"rule_set":["mobile-whitelist-direct"],"action":"route","outbound":"DIRECT"},{"ip_is_private":true,"action":"route","outbound":"DIRECT"}],"final":"SELECT","auto_detect_interface":true,"rule_set":[{"type":"inline","tag":"mobile-whitelist-direct","rules":[{"domain_suffix":["00.img.avito.st","01.img.avito.st","02.img.avito.st","03.img.avito.st","04.img.avito.st","05.img.avito.st","06.img.avito.st","07.img.avito.st","08.img.avito.st","09.img.avito.st","10.img.avito.st","11.img.avito.st","12.img.avito.st","13.img.avito.st","14.img.avito.st","15.img.avito.st","16.img.avito.st","17.img.avito.st","18.img.avito.st","19.img.avito.st","1l-api.mail.ru","1l-go.mail.ru","1l-hit.mail.ru","1l-s2s.mail.ru","1l-view.mail.ru","1l.mail.ru","1link.mail.ru","20.img.avito.st","2018.mail.ru","2019.mail.ru","2020.mail.ru","2021.mail.ru","21.img.avito.st","22.img.avito.st","23.img.avito.st","23feb.mail.ru","24.img.avito.st","25.img.avito.st","26.img.avito.st","27.img.avito.st","28.img.avito.st","29.img.avito.st","2gis.com","2gis.ru","30.img.avito.st","300.ya.ru","31.img.avito.st","32.img.avito.st","33.img.avito.st","34.img.avito.st","3475482542.mc.yandex.ru","35.img.avito.st","36.img.avito.st","37.img.avito.st","38.img.avito.st","39.img.avito.st","40.img.avito.st","41.img.avito.st","42.img.avito.st","43.img.avito.st","44.img.avito.st","45.img.avito.st","46.img.avito.st","47.img.avito.st","48.img.avito.st","49.img.avito.st","50.img.avito.st","51.img.avito.st","52.img.avito.st","53.img.avito.st","54.img.avito.st","55.img.avito.st","56.img.avito.st","57.img.avito.st","58.img.avito.st","59.img.avito.st","5ka.ru","60.img.avito.st","61.img.avito.st","62.img.avito.st","63.img.avito.st","64.img.avito.st","65.img.avito.st","66.img.avito.st","67.img.avito.st","68.img.avito.st","69.img.avito.st","70.img.avito.st","71.img.avito.st","72.img.avito.st","73.img.avito.st","74.img.avito.st","742231.ms.ok.ru","75.img.avito.st","76.img.avito.st","77.img.avito.st","78.img.avito.st","79.img.avito.st","80.img.avito.st","81.img.avito.st","82.img.avito.st","83.img.avito.st","84.img.avito.st","85.img.avito.st","86.img.avito.st","87.img.avito.st","88.img.avito.st","89.img.avito.st","8mar.mail.ru","8march.mail.ru","90.img.avito.st","91.img.avito.st","92.img.avito.st","93.img.avito.st","94.img.avito.st","95.img.avito.st","96.img.avito.st","97.img.avito.st","98.img.avito.st","99.img.avito.st","9may.mail.ru","a.auth-nsdi.ru","a.res-nsdi.ru","a.wb.ru","aa.mail.ru","adm.digital.gov.ru","adm.mp.rzd.ru","admin.cs7777.vk.ru","admin.tau.vk.ru","ads.vk.ru","adv.ozon.ru","afisha.mail.ru","agent.mail.ru","akashi.vk-portal.net","alfa-mobile.alfabank.ru","alfabank.ru","alpha3.minigames.mail.ru","alpha4.minigames.mail.ru","amigo.mail.ru","ams2-cdn.2gis.com","an.yandex.ru","analytics.predict.mail.ru","analytics.vk.ru","answer.mail.ru","answers.mail.ru","api-maps.yandex.ru","api.2gis.ru","api.avito.ru","api.browser.yandex.com","api.browser.yandex.ru","api.cs7777.vk.ru","api.dobro.ru","api.events.plus.yandex.net","api.evotor.ru","api.hrlink.ru","api.lizaalert.org","api.max.ru","api.ok.ru","api.photo.2gis.com","api.plus.kinopoisk.ru","api.predict.mail.ru","api.reviews.2gis.com","api.roskachestvo.gov.ru","api.s3.yandex.net","api.tau.vk.ru","api.uxfeedback.yandex.net","api.vk.ru","app.hrlink.ru","apps.research.mail.ru","auchan.ru","authdl.mail.ru","auto.mail.ru","auto.ru","autodiscover.corp.mail.ru","autodiscover.ord.ozon.ru","av.mail.ru","av.ru","avatars.mds.yandex.com","avatars.mds.yandex.net","avito.ru","avito.st","aw.mail.ru","away.cs7777.vk.ru","away.tau.vk.ru","azt.mail.ru","b.auth-nsdi.ru","b.res-nsdi.ru","bank.ozon.ru","banners-website.wildberries.ru","bb.mail.ru","bd.mail.ru","beko.dom.mail.ru","belkacar.ru","bender.mail.ru","beta.mail.ru","bfds.sberbank.ru","bitva.mail.ru","biz.mail.ru","blackfriday.mail.ru","blog.mail.ru","bot.gosuslugi.ru","botapi.max.ru","bratva-mr.mail.ru","bro-bg-store.s3.yandex.com","bro-bg-store.s3.yandex.net","bro-bg-store.s3.yandex.ru","brontp-pre.yandex.ru","browser.mail.ru","browser.yandex.com","browser.yandex.ru","business.vk.ru","cabinet.evotor.ru","calendar.mail.ru","capsula.mail.ru","cargo.rzd.ru","cars.mail.ru","catalog.api.2gis.com","cbr.ru","cdek.ru","cdn.connect.mail.ru","cdn.lemanapro.ru","cdn.newyear.mail.ru","cdn.s3.yandex.net","cdn.tbank.ru","cdn.yandex.ru","cdnrhkgfkkpupuotntfj.svc.cdn.yandex.net","cf.mail.ru","chat-prod.wildberries.ru","chat3.vtb.ru","chizhik.club","citydriveone.onelink.me","cloud.cdn.yandex.com","cloud.cdn.yandex.net","cloud.cdn.yandex.ru","cloud.mail.ru","cloud.vk.com","cloud.vk.ru","cloudcdn-ams19.cdn.yandex.net","cloudcdn-m9-10.cdn.yandex.net","cloudcdn-m9-12.cdn.yandex.net","cloudcdn-m9-13.cdn.yandex.net","cloudcdn-m9-14.cdn.yandex.net","cloudcdn-m9-15.cdn.yandex.net","cloudcdn-m9-2.cdn.yandex.net","cloudcdn-m9-3.cdn.yandex.net","cloudcdn-m9-4.cdn.yandex.net","cloudcdn-m9-5.cdn.yandex.net","cloudcdn-m9-6.cdn.yandex.net","cloudcdn-m9-7.cdn.yandex.net","cloudcdn-m9-9.cdn.yandex.net","cms-res-web.online.sberbank.ru","cobma.mail.ru","cobmo.mail.ru","cobrowsing.tbank.ru","code.mail.ru","codefest.mail.ru","cog.mail.ru","collections.yandex.com","collections.yandex.ru","comba.mail.ru","combu.mail.ru","commba.mail.ru","company.rzd.ru","compute.mail.ru","connect.cs7777.vk.ru","contacts.rzd.ru","contract.gosuslugi.ru","corp.mail.ru","cpg.money.mail.ru","crazypanda.mail.ru","crowdtest.payment-widget-smarttv.plus.tst.kinopoisk.ru","crowdtest.payment-widget.plus.tst.kinopoisk.ru","cs.avito.ru","cs7777.vk.ru","csat.ru","csp.yandex.net","ctlog.mail.ru","ctlog2023.mail.ru","ctlog2024.mail.ru","cto.mail.ru","cups.mail.ru","d-assets.2gis.ru","da-preprod.biz.mail.ru","da.biz.mail.ru","data.amigo.mail.ru","dating.ok.ru","delimobil.ru","deti.mail.ru","dev.cs7777.vk.ru","dev.max.ru","dev.tau.vk.ru","dev1.mail.ru","dev2.mail.ru","dev3.mail.ru","digital.gov.ru","disk.2gis.com","disk.rzd.ru","dixy.ru","dk.mail.ru","dl.mail.ru","dl.marusia.mail.ru","dmp.dmpkit.lemanapro.ru","dn.mail.ru","dnd.wb.ru","dnevnik.ru","dobro.mail.ru","dobro.ru","doc.mail.ru","dom.mail.ru","domclick.ru","download.max.ru","dr.yandex.net","dr2.yandex.net","dragonpals.mail.ru","ds.mail.ru","duck.mail.ru","duma.gov.ru","dzen.ru","e.mail.ru","edu.gov.ru","edu.sirius.online","education.mail.ru","egress.yandex.net","eh.vk.com","ekmp-a-51.rzd.ru","enterprise.api-maps.yandex.ru","epp.genproc.gov.ru","esa-res.online.sberbank.ru","esc.predict.mail.ru","esia.gosuslugi.ru","et.mail.ru","evotor.ru","expert.vk.ru","external-api.mediabilling.kinopoisk.ru","external-api.plus.kinopoisk.ru","favicon.yandex.com","favicon.yandex.net","favicon.yandex.ru","favorites.api.2gis.com","fe.mail.ru","filekeeper-vod.2gis.com","finance.mail.ru","finance.wb.ru","five.predict.mail.ru","food.ru","foto.mail.ru","frontend.vh.yandex.ru","fw.wb.ru","games-bamboo.mail.ru","games-fisheye.mail.ru","games.mail.ru","gazeta.ru","gazprombank.ru","genesis.mail.ru","geo-apart.predict.mail.ru","gibdd.mail.ru","go.mail.ru","go.yandex","golos.mail.ru","gosuslugi.ru","gosweb.gosuslugi.ru","government.ru","goya.rutube.ru","gpb.finance.mail.ru","graphql-web.kinopoisk.ru","graphql.kinopoisk.ru","gu-st.ru","guns.mail.ru","hd.kinopoisk.ru","health.mail.ru","help.max.ru","help.mcs.mail.ru","hh.ru","hi-tech.mail.ru","horo.mail.ru","hrc.tbank.ru","hrlink.ru","hs.mail.ru","http-check-headers.yandex.ru","i.max.ru","i0.photo.2gis.com","i1.photo.2gis.com","i2.photo.2gis.com","i3.photo.2gis.com","i4.photo.2gis.com","i5.photo.2gis.com","i6.photo.2gis.com","i7.photo.2gis.com","i8.photo.2gis.com","i9.photo.2gis.com","id.cs7777.vk.ru","id.sber.ru","id.tau.vk.ru","id.tbank.ru","id.vk.ru","imgproxy.cdn-tinkoff.ru","imgsmail.ru","imperia.mail.ru","informer.yandex.ru","infra.mail.ru","internet.mail.ru","invest.ozon.ru","ir.ozone.ru","it.mail.ru","iz.ru","izbirkom.ru","jam.api.2gis.com","jd.mail.ru","jitsi.wb.ru","journey.mail.ru","juggermobile.mail.ru","junior.mail.ru","keys.api.2gis.com","khl.ru","kicker.mail.ru","kiks.yandex.com","kiks.yandex.ru","kingdomrift.mail.ru","kino.mail.ru","kinopoisk.ru","kion.ru","knights.mail.ru","kobma.mail.ru","kobmo.mail.ru","komba.mail.ru","kombo.mail.ru","kombu.mail.ru","kommba.mail.ru","kommersant.ru","konflikt.mail.ru","kp.ru","krasyar.ru","kremlin.ru","kz.mcs.mail.ru","la.mail.ru","lady.mail.ru","land.dobro.ru","landing.mail.ru","le.tbank.ru","learning.ozon.ru","legal.max.ru","legenda.mail.ru","legendofheroes.mail.ru","lemanapro.ru","lenta.com","lenta.ru","link.max.ru","link.mp.rzd.ru","live.ok.ru","lizaalert.org","lk.gosuslugi.ru","loa.mail.ru","log.strm.yandex.ru","login.cs7777.vk.ru","login.tau.vk.ru","login.vk.com","login.vk.ru","lotro.mail.ru","love.mail.ru","m.47news.ru","m.avito.ru","m.cs7777.vk.ru","m.ok.ru","m.tau.vk.ru","m.vk.ru","m.vkvideo.cs7777.vk.ru","ma.kinopoisk.ru","magnit.ru","mail.ru","mail.yandex.com","mail.yandex.ru","mailer.mail.ru","mailexpress.mail.ru","mamadeti.ru","man.mail.ru","map.gosuslugi.ru","mapgl.2gis.com","mapi.learning.ozon.ru","maps.mail.ru","market.rzd.ru","marusia.mail.ru","max.ru","mc.yandex.com","mc.yandex.ru","mcs.mail.ru","me.cs7777.vk.ru","media-golos.mail.ru","media.mail.ru","mediafeeds.yandex.com","mediafeeds.yandex.ru","mediapro.mail.ru","medsi.ru","merch-cpg.money.mail.ru","metrics.alfabank.ru","microapps.kinopoisk.ru","miniapp.internal.myteam.mail.ru","minigames.mail.ru","mironline.ru","mking.mail.ru","mobfarm.mail.ru","money.mail.ru","monitoring.plus","moskva.taximaxim.ru","mosqa.mail.ru","mowar.mail.ru","mozilla.mail.ru","mp.rzd.ru","ms.cs7777.vk.ru","msk.t2.ru","mts-link.ru","mts.ru","mtsbank.ru","multitest.ok.ru","music.mts.ru","music.vk.ru","my.mail.ru","my.rzd.ru","mymts.ru","myteam.mail.ru","nalog.gov.ru","nebogame.mail.ru","net.mail.ru","neuro.translate.yandex.ru","new.mail.ru","news.mail.ru","newyear.mail.ru","newyear2018.mail.ru","nonstandard.sales.mail.ru","notes.mail.ru","novorossiya.gosuslugi.ru","nspk.ru","oauth.cs7777.vk.ru","oauth.tau.vk.ru","oauth2.cs7777.vk.ru","octavius.mail.ru","ofd.ru","ok.ru","okeydostavka.ru","okko.tv","oneclick-payment.kinopoisk.ru","onf.ru","online.sberbank.ru","operator.mail.ru","ord.ozon.ru","ord.vk.ru","otello.ru","otvet.mail.ru","otveti.mail.ru","otvety.mail.ru","owa.ozon.ru","ozon.ru","panzar.mail.ru","park.mail.ru","partners.gosuslugi.ru","partners.lemanapro.ru","pay.mail.ru","pay.ozon.ru","payment-widget-smarttv.plus.kinopoisk.ru","payment-widget.kinopoisk.ru","payment-widget.plus.kinopoisk.ru","perekrestok.ru","pernatsk.mail.ru","pets.mail.ru","pic.rutubelist.ru","pl-res.online.sberbank.ru","platform.ofd.ru","pms.mail.ru","pochta.ru","pochtabank.mail.ru","pogoda.mail.ru","pokerist.mail.ru","polis.mail.ru","pos.gosuslugi.ru","pp.mail.ru","pptest.userapi.com","predict.mail.ru","premium.mts.ru","preview.rutube.ru","primeworld.mail.ru","privacy-cs.mail.ru","prodvizhenie.rzd.ru","psbank.ru","ptd.predict.mail.ru","pubg.mail.ru","public-api.reviews.2gis.com","public.infra.mail.ru","pulse.mail.ru","pulse.mp.rzd.ru","push.vk.ru","pw.mail.ru","quantum.mail.ru","queuev4.vk.com","quiz.kinopoisk.ru","r.vk.ru","r0.mradx.net","rambler.ru","rate.mail.ru","rbc.ru","rebus.calls.mail.ru","rebus.octavius.mail.ru","receive-sentry.lmru.tech","reseach.mail.ru","rev.mail.ru","rg.ru","ria.ru","riot.mail.ru","rl.mail.ru","rm.mail.ru","roskachestvo.gov.ru","rs.mail.ru","rt.api.operator.mail.ru","russian.rt.com","rustore.ru","rutube.ru","rzd.ru","s.vtb.ru","s0.bss.2gis.com","s1.bss.2gis.com","s3.babel.mail.ru","s3.mail.ru","s3.media-mobs.mail.ru","s3.t2.ru","s3.yandex.net","s7.ru","sales.mail.ru","sangels.mail.ru","sba.yandex.com","sba.yandex.net","sba.yandex.ru","sberbank.ru","sdk.money.mail.ru","secure-cloud.rzd.ru","secure.rzd.ru","securepay.ozon.ru","security.mail.ru","seller.ozon.ru","service.amigo.mail.ru","service.urentbike.ru","sfd.gosuslugi.ru","shadowbound.mail.ru","skai.online","slata.ru","sntr.avito.ru","socdwar.mail.ru","sochi-park.predict.mail.ru","sochisirius.ru","souz.mail.ru","speller.yandex.net","sphere.mail.ru","sport.mail.ru","sportmail.ru","sso-app4.vtb.ru","sso-app5.vtb.ru","sso.auto.ru","sso.dzen.ru","sso.kinopoisk.ru","ssp.rutube.ru","st-im.kinopoisk.ru","st-ok.cdn-vk.ru","st.avito.ru","st.kinopoisk.ru","st.max.ru","st.okcdn.ru","st.ozone.ru","staging-analytics.predict.mail.ru","staging-esc.predict.mail.ru","staging-sochi-park.predict.mail.ru","stand.aoc.mail.ru","stand.bb.mail.ru","stand.cb.mail.ru","stand.la.mail.ru","stand.pw.mail.ru","starline.ru","startrek.mail.ru","static-mon.yandex.net","static.dl.mail.ru","static.lemanapro.ru","static.operator.mail.ru","static.rutube.ru","stats.avito.ru","stats.vk-portal.net","status.mcs.mail.ru","storage.ape.yandex.net","storage0.sirius.online","stormriders.mail.ru","stream.mail.ru","street-combats.mail.ru","strm-rad-23.strm.yandex.net","strm.yandex.net","strm.yandex.ru","stroki.mts.ru","styles.api.2gis.com","suggest.dzen.ru","suggest.sso.dzen.ru","sun1-13.userapi.com","sun1-14.userapi.com","sun1-15.userapi.com","sun1-16.userapi.com","sun1-17.userapi.com","sun1-18.userapi.com","sun1-19.userapi.com","sun1-20.userapi.com","sun1-21.userapi.com","sun1-22.userapi.com","sun1-23.userapi.com","sun1-24.userapi.com","sun1-25.userapi.com","sun1-26.userapi.com","sun1-27.userapi.com","sun1-28.userapi.com","sun1-29.userapi.com","sun1-30.userapi.com","sun1-47.userapi.com","sun1-54.userapi.com","sun1-55.userapi.com","sun1-56.userapi.com","sun1-57.userapi.com","sun1-83.userapi.com","sun1-84.userapi.com","sun1-85.userapi.com","sun1-86.userapi.com","sun1-87.userapi.com","sun1-88.userapi.com","sun1-89.userapi.com","sun1-90.userapi.com","sun1-91.userapi.com","sun1-92.userapi.com","sun1-93.userapi.com","sun1-94.userapi.com","sun1-95.userapi.com","sun1-96.userapi.com","sun1-97.userapi.com","sun1-98.userapi.com","sun1-99.userapi.com","sun2-10.userapi.com","sun2-11.userapi.com","sun2-12.userapi.com","sun2-13.userapi.com","sun2-14.userapi.com","sun2-15.userapi.com","sun2-16.userapi.com","sun2-17.userapi.com","sun2-18.userapi.com","sun2-19.userapi.com","sun2-20.userapi.com","sun2-21.userapi.com","sun2-22.userapi.com","sun3-10.userapi.com","sun3-11.userapi.com","sun3-12.userapi.com","sun3-13.userapi.com","sun3-16.userapi.com","sun3-17.userapi.com","sun3-18.userapi.com","sun3-19.userapi.com","sun3-20.userapi.com","sun3-21.userapi.com","sun3-22.userapi.com","sun3-23.userapi.com","sun3-24.userapi.com","sun4-10.userapi.com","sun4-11.userapi.com","sun4-12.userapi.com","sun4-15.userapi.com","sun4-16.userapi.com","sun4-17.userapi.com","sun4-18.userapi.com","sun4-19.userapi.com","sun4-20.userapi.com","sun4-21.userapi.com","sun4-22.userapi.com","sun6-20.userapi.com","sun6-21.userapi.com","sun6-22.userapi.com","sun6-23.userapi.com","sun7-12.userapi.com","sun7-13.userapi.com","sun7-14.userapi.com","sun7-15.userapi.com","sun7-16.userapi.com","sun7-17.userapi.com","sun7-18.userapi.com","sun7-19.userapi.com","sun7-20.userapi.com","sun7-21.userapi.com","sun7-22.userapi.com","sun7-23.userapi.com","sun7-24.userapi.com","sun9-10.userapi.com","sun9-11.userapi.com","sun9-12.userapi.com","sun9-13.userapi.com","sun9-14.userapi.com","sun9-15.userapi.com","sun9-16.userapi.com","sun9-17.userapi.com","sun9-18.userapi.com","sun9-19.userapi.com","sun9-20.userapi.com","sun9-21.userapi.com","sun9-22.userapi.com","sun9-23.userapi.com","sun9-24.userapi.com","sun9-25.userapi.com","sun9-26.userapi.com","sun9-27.userapi.com","sun9-28.userapi.com","sun9-29.userapi.com","sun9-30.userapi.com","sun9-31.userapi.com","sun9-32.userapi.com","sun9-33.userapi.com","sun9-34.userapi.com","sun9-35.userapi.com","sun9-36.userapi.com","sun9-37.userapi.com","sun9-38.userapi.com","sun9-39.userapi.com","sun9-40.userapi.com","sun9-41.userapi.com","sun9-42.userapi.com","sun9-43.userapi.com","sun9-44.userapi.com","sun9-45.userapi.com","sun9-46.userapi.com","sun9-47.userapi.com","sun9-48.userapi.com","sun9-49.userapi.com","sun9-50.userapi.com","sun9-51.userapi.com","sun9-52.userapi.com","sun9-53.userapi.com","sun9-54.userapi.com","sun9-55.userapi.com","sun9-56.userapi.com","sun9-57.userapi.com","sun9-58.userapi.com","sun9-59.userapi.com","sun9-60.userapi.com","sun9-61.userapi.com","sun9-62.userapi.com","sun9-63.userapi.com","sun9-64.userapi.com","sun9-65.userapi.com","sun9-66.userapi.com","sun9-67.userapi.com","sun9-68.userapi.com","sun9-69.userapi.com","sun9-70.userapi.com","sun9-71.userapi.com","sun9-72.userapi.com","sun9-73.userapi.com","sun9-74.userapi.com","sun9-75.userapi.com","sun9-76.userapi.com","sun9-77.userapi.com","sun9-78.userapi.com","sun9-79.userapi.com","sun9-80.userapi.com","sun9-81.userapi.com","sun9-82.userapi.com","sun9-83.userapi.com","sun9-84.userapi.com","sun9-85.userapi.com","sun9-86.userapi.com","sun9-87.userapi.com","sun9-88.userapi.com","support.biz.mail.ru","support.mcs.mail.ru","support.tech.mail.ru","surveys.yandex.ru","sync.browser.yandex.net","tamtam.ok.ru","target.vk.ru","tass.ru","team.mail.ru","team.rzd.ru","tech.mail.ru","tech.vk.ru","tera.mail.ru","ticket.rzd.ru","ticketland.ru","tickets.widget.kinopoisk.ru","tidaltrek.mail.ru","tile0.maps.2gis.com","tile1.maps.2gis.com","tile2.maps.2gis.com","tile3.maps.2gis.com","tile4.maps.2gis.com","tiles.maps.mail.ru","tmgame.mail.ru","todo.mail.ru","top-fwz1.mail.ru","touch.kinopoisk.ru","townwars.mail.ru","travel.rzd.ru","travel.yandex.ru","travel.yastatic.net","travel2moscow.com","travelrussia.ru","trk.mail.ru","ttbh.mail.ru","tutu.ru","tv.mail.ru","typewriter.mail.ru","u.corp.mail.ru","ufo.mail.ru","ui.cs7777.vk.ru","ui.tau.vk.ru","user-geo-data.wildberries.ru","uslugi.yandex.ru","uxfeedback-cdn.s3.yandex.net","uxfeedback.yandex.ru","vedomosti.ru","vk-portal.net","vk.com","vk.mail.ru","vk.ru","vkdoc.mail.ru","vkusvill.ru","vkvideo.cs7777.vk.ru","voina.mail.ru","volunteer.lizaalert.org","voter.gosuslugi.ru","vt-1.ozone.ru","vtb.ru","vybory.gov.ru","wap.yandex.com","wap.yandex.ru","warface.mail.ru","warheaven.mail.ru","wartune.mail.ru","wb.ru","web.max.ru","webagent.mail.ru","weblink.predict.mail.ru","webstore.mail.ru","welcome.mail.ru","welcome.rzd.ru","wf.mail.ru","wh-cpg.money.mail.ru","whatsnew.mail.ru","widgets.kinopoisk.ru","wildberries.ru","wok.mail.ru","wos.mail.ru","ws-api.oneme.ru","ws.seller.ozon.ru","www.avito.ru","www.avito.st","www.biz.mail.ru","www.cikrf.ru","www.gosuslugi.ru","www.kinopoisk.ru","www.mail.ru","www.mcs.mail.ru","www.ozon.ru","www.pubg.mail.ru","www.rzd.ru","www.sberbank.ru","www.t2.ru","www.vtb.ru","www.wf.mail.ru","xapi.ozon.ru","xn--80ajghhoc2aj1c8b.xn--p1ai","ya.ru","yabro-wbplugin.edadeal.yandex.ru","yabs.yandex.ru","yandex.com","yandex.net","yandex.ru","yastatic.net","zen-yabro-morda.mediascope.mc.yandex.ru","zen.yandex.com","zen.yandex.net","zen.yandex.ru"]}]}]},"experimental":{"cache_file":{"enabled":true,"path":"/etc/sing-box/cache.db"},"clash_api":{"external_controller":"0.0.0.0:9090","external_ui":"/etc/sing-box/ui","external_ui_download_url":"https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip","external_ui_download_detour":"DIRECT","secret":"TR3000-HAPP-8c4f71a9"}}}</script>
     <script>
       "use strict";
+
+// Shared Russian and English interface translations.
+
+const TRANSLATIONS = {
+  ru: {
+    "meta.description": "Локальный генератор sing-box config.json для OpenWrt",
+    "hero.description":
+      "Собирает полный <strong>config.json</strong> из VPN-подписок, оставляет DIRECT режимом по умолчанию, а мимо VPN отправляет только сервисы из встроенных белых списков.",
+    "notice.title": "Важно.",
+    "notice.body":
+      "Подписки содержат секретные ключи. Страница ничего не отправляет сторонним сервисам и не сохраняет ссылки. При запуске через <code>sing-box-config-builder.py</code> подписку скачивает локальный Python, поэтому CORS не мешает.",
+    "subscriptions.title": "1. VPN-подписки",
+    "subscriptions.description":
+      "Можно добавить любое количество источников и префикс имён.",
+    "subscriptions.add": "+ Добавить подписку",
+    "direct.title": "2. Всегда напрямую",
+    "direct.description":
+      "Белые списки российских сервисов уже добавлены по умолчанию. Свои домены или URL можно добавить по одному на строку.",
+    "direct.aria": "Домены прямого маршрута",
+    "direct.reset": "Вернуть базовый список",
+    "direct.sort": "Очистить дубли и сортировать",
+    "settings.title": "3. Настройки",
+    "settings.description": "Настройки подходят для sing-box версии 1.12.17.",
+    "settings.healthInterval": "Проверка туннелей",
+    "settings.controllerAddress": "Адрес Yacd API",
+    "settings.controllerSecret": "Пароль Yacd",
+    "settings.tunName": "Имя TUN",
+    "settings.build": "Собрать полный config.json",
+    "settings.warning":
+      "Адрес <code>0.0.0.0:9090</code> открывает Yacd для устройств в домашней сети. Пароль берётся из рабочего конфига и сохраняется в браузере. Команда удаления <code>cache.db</code> ниже один раз сбросит старый выбор на <code>DIRECT</code>.",
+    "settings.initialStatus": "Сначала загрузите хотя бы одну подписку.",
+    "output.title": "Готовый конфиг",
+    "output.description": "DIRECT выбран по умолчанию, AUTO проверяет все узлы.",
+    "output.tunnels": "туннелей",
+    "output.skipped": "пропущено",
+    "output.directDomains": "DIRECT доменов",
+    "output.placeholder": "Здесь появится полный JSON…",
+    "output.aria": "Готовый config.json",
+    "output.download": "Скачать config.json",
+    "output.copy": "Копировать JSON",
+    "commands.title": "Команды после загрузки",
+    "commands.description":
+      "Положите файл в <code>/etc/sing-box/config.json</code>, затем выполните:",
+    "commands.copy": "Копировать команды",
+    "commands.checkHint":
+      "Пустой вывод команды <code>sing-box check</code> означает, что конфиг прошёл проверку.",
+    "commands.recoveryTitle": "Если после запуска пропал интернет",
+    "commands.recoveryCopy": "Копировать аварийное отключение",
+    "source.urlLabel": "Ссылка подписки",
+    "source.urlPlaceholder": "https://example.com/sub/…",
+    "source.prefixLabel": "Префикс имён",
+    "source.prefixPlaceholder": "необязательно",
+    "source.fetch": "Загрузить по URL",
+    "source.file": "Выбрать .txt/.json",
+    "source.hwidTitle": "Отправлять HWID установленного Happ этому провайдеру",
+    "source.hwid": "HWID Happ",
+    "source.hwidHint":
+      "<strong>HWID Happ</strong> нужен только для подписок, привязанных к установленному приложению Happ, например tconnect. Для ссылок <code>happ://…</code> он включается автоматически.",
+    "source.remove": "Удалить",
+    "source.manualSummary": "Или вставить содержимое подписки вручную",
+    "source.rawPlaceholder": "vless://… или base64/JSON",
+    "source.parseRaw": "Прочитать вставленный текст",
+    "source.selection": "Выбор туннелей",
+    "source.selectedZero": "0 выбрано",
+    "source.searchPlaceholder": "Поиск по названию…",
+    "source.searchAria": "Поиск туннелей",
+    "source.selectSupported": "Все рабочие",
+    "source.clear": "Снять все",
+    "source.excludeRussia": "Отключить Россию",
+    "source.groupAria": "Выбор VPN-туннелей",
+    "source.initial": "Источник ещё не загружен.",
+    "picker.count": "{selected} выбрано из {supported} рабочих · {found} всего",
+    "picker.addAria": "Добавить туннель {tag}",
+    "picker.noTransport": "без транспорта",
+    "picker.unsupported": "Не будет добавлен: {reason}",
+    "summary.zeroNodes": "0 узлов",
+    "summary.nodes":
+      "{selected} выбрано из {supported} рабочих ({found} найдено)",
+    "node.generated": "{number} Узел",
+    "source.providerStub":
+      "Провайдер вернул заглушку. Включите «HWID Happ» и загрузите ещё раз.",
+    "source.loadedWithSkipped":
+      "Найдено {found}: поддерживаются {supported}, будут пропущены {skipped}.",
+    "source.loaded": "Загружено узлов: {count}.",
+    "source.error": "Ошибка: {message}",
+    "source.enterUrl": "Вставьте ссылку подписки.",
+    "source.loading": "Загружаю…",
+    "source.hwidNeedsBackend": "Для HWID Happ нужен запущенный Python/Docker сервер",
+    "source.fileNeedsBackend":
+      "HTML открыт без Python. Закройте вкладку и запустите start-sing-box-builder.command",
+    "source.fetchFailed": "Не удалось загрузить: {message}",
+    "backend.fileHelp":
+      "Эта вкладка открыта напрямую, поэтому браузер не даст скачать подписки. Закройте её и дважды нажмите start-sing-box-builder.command — Python откроет правильный адрес http://127.0.0.1:8765/.",
+    "backend.unavailable":
+      "Локальный Python-сервер недоступен. Запустите start-sing-box-builder.command и работайте во вкладке http://127.0.0.1:8765/.",
+    "domain.count": "{count} доменов",
+    "config.invalidated": "Выбор туннелей изменён — соберите config.json заново.",
+    "validation.intervalFormat": "Интервал должен выглядеть как 10m, 20m или 1h.",
+    "validation.intervalMinimum":
+      "Для большого списка туннелей интервал должен быть не меньше 10m.",
+    "validation.controller": "Адрес Yacd должен выглядеть как 0.0.0.0:9090.",
+    "validation.tunName":
+      "Имя TUN: от 1 до 15 букв, цифр, точек, дефисов или подчёркиваний.",
+    "validation.secret": "Пароль Yacd должен содержать минимум 8 символов.",
+    "config.noLoadedNodes": "Не найдено ни одного загруженного узла.",
+    "config.chooseTunnel": "Выберите хотя бы один поддерживаемый туннель.",
+    "config.noSupported":
+      "Найдено {found} узлов, но ни один не поддерживается sing-box. Для XHTTP используйте PassWall2 + Xray-core.",
+    "config.disabled": "Отключено вручную: {count}.",
+    "config.xhttpOnly": "XHTTP нельзя превратить в рабочий sing-box outbound.",
+    "config.disabledReason": "отключено вручную",
+    "config.notAdded": "Не добавлены: {reasons}.",
+    "config.ready":
+      "Готово: {count} рабочих форматов, DIRECT по умолчанию{suffix}",
+    "config.skippedSuffix": ", не добавлено {count}.",
+    "config.noSkippedSuffix": ".",
+    "toast.built": "config.json собран",
+    "toast.sorted": "Список очищен и отсортирован",
+    "toast.jsonCopied": "JSON скопирован",
+    "toast.commandsCopied": "Команды скопированы",
+    "toast.recoveryCopied": "Команды отключения скопированы",
+    "subscription.empty": "Подписка пустая",
+    "subscription.noSupportedJsonNodes": "В JSON sing-box нет поддерживаемых узлов",
+    "subscription.noNodes": "В подписке нет узлов",
+    "reason.invalidLink": "некорректная ссылка",
+    "reason.invalidServer": "некорректный или локальный адрес сервера",
+    "reason.invalidSni": "некорректный SNI",
+    "reason.xhttpUnsupported": "XHTTP не поддерживается sing-box",
+    "reason.unsupportedTransport": "транспорт {transport} не поддерживается",
+    "reason.invalidVlessUuid": "некорректный UUID VLESS",
+    "reason.invalidTlsReality": "некорректный TLS/Reality",
+    "reason.unsupportedProtocol": "протокол {protocol} не поддерживается",
+    "reason.unknownProtocol": "не определён",
+    "reason.missingOutbound": "в JSON отсутствует outbound",
+    "reason.invalidVless": "некорректный VLESS",
+    "reason.invalidVlessTarget": "некорректный адрес, порт или UUID VLESS",
+    "reason.invalidTrojan": "некорректный Trojan",
+    "reason.invalidHysteria2": "некорректный Hysteria2",
+    "reason.invalidHysteria2Tls": "некорректный TLS Hysteria2",
+    "reason.missingTrojanPassword": "в Trojan отсутствует пароль",
+    "reason.missingHysteria2Password": "в Hysteria2 отсутствует пароль",
+  },
+  en: {
+    "meta.description": "Local sing-box config.json generator for OpenWrt",
+    "hero.description":
+      "Builds a complete <strong>config.json</strong> from VPN subscriptions, keeps DIRECT as the default mode, and bypasses the VPN only for services in the built-in allowlists.",
+    "notice.title": "Important.",
+    "notice.body":
+      "Subscriptions contain secret keys. This page does not send data to third-party services or store subscription URLs. When started through <code>sing-box-config-builder.py</code>, the local Python server downloads subscriptions, so browser CORS restrictions do not apply.",
+    "subscriptions.title": "1. VPN subscriptions",
+    "subscriptions.description":
+      "Add any number of sources and optional name prefixes.",
+    "subscriptions.add": "+ Add subscription",
+    "direct.title": "2. Always direct",
+    "direct.description":
+      "Allowlists for Russian services are included by default. Add your own domains or URLs, one per line.",
+    "direct.aria": "Direct-route domains",
+    "direct.reset": "Restore built-in list",
+    "direct.sort": "Remove duplicates and sort",
+    "settings.title": "3. Settings",
+    "settings.description": "These settings target sing-box version 1.12.17.",
+    "settings.healthInterval": "Tunnel check interval",
+    "settings.controllerAddress": "Yacd API address",
+    "settings.controllerSecret": "Yacd password",
+    "settings.tunName": "TUN name",
+    "settings.build": "Build complete config.json",
+    "settings.warning":
+      "Address <code>0.0.0.0:9090</code> exposes Yacd to devices on your home network. The password is taken from the working config and stored in the browser. The <code>cache.db</code> removal command below resets the previous selection to <code>DIRECT</code> once.",
+    "settings.initialStatus": "Load at least one subscription first.",
+    "output.title": "Generated config",
+    "output.description": "DIRECT is selected by default; AUTO checks every node.",
+    "output.tunnels": "tunnels",
+    "output.skipped": "skipped",
+    "output.directDomains": "DIRECT domains",
+    "output.placeholder": "The complete JSON will appear here…",
+    "output.aria": "Generated config.json",
+    "output.download": "Download config.json",
+    "output.copy": "Copy JSON",
+    "commands.title": "Commands after upload",
+    "commands.description":
+      "Place the file at <code>/etc/sing-box/config.json</code>, then run:",
+    "commands.copy": "Copy commands",
+    "commands.checkHint":
+      "No output from <code>sing-box check</code> means the config passed validation.",
+    "commands.recoveryTitle": "If internet access disappears after startup",
+    "commands.recoveryCopy": "Copy emergency shutdown",
+    "source.urlLabel": "Subscription URL",
+    "source.urlPlaceholder": "https://example.com/sub/…",
+    "source.prefixLabel": "Name prefix",
+    "source.prefixPlaceholder": "optional",
+    "source.fetch": "Load from URL",
+    "source.file": "Choose .txt/.json",
+    "source.hwidTitle": "Send the installed Happ HWID to this provider",
+    "source.hwid": "Happ HWID",
+    "source.hwidHint":
+      "<strong>Happ HWID</strong> is only needed for subscriptions tied to an installed Happ app, such as tconnect. It is enabled automatically for <code>happ://…</code> links.",
+    "source.remove": "Remove",
+    "source.manualSummary": "Or paste the subscription contents manually",
+    "source.rawPlaceholder": "vless://… or base64/JSON",
+    "source.parseRaw": "Parse pasted text",
+    "source.selection": "Tunnel selection",
+    "source.selectedZero": "0 selected",
+    "source.searchPlaceholder": "Search by name…",
+    "source.searchAria": "Search tunnels",
+    "source.selectSupported": "All supported",
+    "source.clear": "Clear all",
+    "source.excludeRussia": "Disable Russia",
+    "source.groupAria": "VPN tunnel selection",
+    "source.initial": "Source has not been loaded yet.",
+    "picker.count": "{selected} of {supported} supported selected · {found} total",
+    "picker.addAria": "Add tunnel {tag}",
+    "picker.noTransport": "no transport",
+    "picker.unsupported": "Will not be added: {reason}",
+    "summary.zeroNodes": "0 nodes",
+    "summary.nodes":
+      "{selected} of {supported} supported selected ({found} found)",
+    "node.generated": "{number} Node",
+    "source.providerStub":
+      "The provider returned a placeholder. Enable “Happ HWID” and load again.",
+    "source.loadedWithSkipped":
+      "Found {found}: {supported} supported, {skipped} will be skipped.",
+    "source.loaded": "Loaded nodes: {count}.",
+    "source.error": "Error: {message}",
+    "source.enterUrl": "Enter a subscription URL.",
+    "source.loading": "Loading…",
+    "source.hwidNeedsBackend": "Happ HWID requires the Python/Docker server",
+    "source.fileNeedsBackend":
+      "The HTML file was opened without Python. Close this tab and run start-sing-box-builder.command",
+    "source.fetchFailed": "Could not load: {message}",
+    "backend.fileHelp":
+      "This tab was opened as a file, so the browser cannot download subscriptions. Close it and double-click start-sing-box-builder.command; Python will open the correct address at http://127.0.0.1:8765/.",
+    "backend.unavailable":
+      "The local Python server is unavailable. Run start-sing-box-builder.command and use http://127.0.0.1:8765/.",
+    "domain.count": "{count} domains",
+    "config.invalidated": "Tunnel selection changed — rebuild config.json.",
+    "validation.intervalFormat": "Use an interval such as 10m, 20m, or 1h.",
+    "validation.intervalMinimum":
+      "For a large tunnel list, the interval must be at least 10m.",
+    "validation.controller": "The Yacd address must look like 0.0.0.0:9090.",
+    "validation.tunName":
+      "TUN name: 1–15 letters, digits, dots, hyphens, or underscores.",
+    "validation.secret": "The Yacd password must contain at least 8 characters.",
+    "config.noLoadedNodes": "No loaded nodes were found.",
+    "config.chooseTunnel": "Select at least one supported tunnel.",
+    "config.noSupported":
+      "Found {found} nodes, but none are supported by sing-box. Use PassWall2 + Xray-core for XHTTP.",
+    "config.disabled": "Disabled manually: {count}.",
+    "config.xhttpOnly": "XHTTP cannot be converted into a working sing-box outbound.",
+    "config.disabledReason": "disabled manually",
+    "config.notAdded": "Not added: {reasons}.",
+    "config.ready":
+      "Ready: {count} supported nodes, DIRECT by default{suffix}",
+    "config.skippedSuffix": ", {count} not added.",
+    "config.noSkippedSuffix": ".",
+    "toast.built": "config.json built",
+    "toast.sorted": "List cleaned and sorted",
+    "toast.jsonCopied": "JSON copied",
+    "toast.commandsCopied": "Commands copied",
+    "toast.recoveryCopied": "Shutdown commands copied",
+    "subscription.empty": "The subscription is empty",
+    "subscription.noSupportedJsonNodes": "The sing-box JSON contains no supported nodes",
+    "subscription.noNodes": "The subscription contains no nodes",
+    "reason.invalidLink": "invalid URL",
+    "reason.invalidServer": "invalid or local server address",
+    "reason.invalidSni": "invalid SNI",
+    "reason.xhttpUnsupported": "XHTTP is not supported by sing-box",
+    "reason.unsupportedTransport": "transport {transport} is not supported",
+    "reason.invalidVlessUuid": "invalid VLESS UUID",
+    "reason.invalidTlsReality": "invalid TLS/Reality settings",
+    "reason.unsupportedProtocol": "protocol {protocol} is not supported",
+    "reason.unknownProtocol": "unknown",
+    "reason.missingOutbound": "the JSON has no outbound",
+    "reason.invalidVless": "invalid VLESS configuration",
+    "reason.invalidVlessTarget": "invalid VLESS address, port, or UUID",
+    "reason.invalidTrojan": "invalid Trojan configuration",
+    "reason.invalidHysteria2": "invalid Hysteria2 configuration",
+    "reason.invalidHysteria2Tls": "invalid Hysteria2 TLS settings",
+    "reason.missingTrojanPassword": "Trojan password is missing",
+    "reason.missingHysteria2Password": "Hysteria2 password is missing",
+  },
+};
+
+const currentLocale = document.documentElement.lang === "en" ? "en" : "ru";
+const currentNumberLocale = currentLocale === "en" ? "en-US" : "ru-RU";
+
+function t(key, values = {}) {
+  const template =
+    TRANSLATIONS[currentLocale][key] ?? TRANSLATIONS.ru[key] ?? key;
+  return template.replace(/\{(\w+)\}/g, (_, name) =>
+    Object.hasOwn(values, name) ? String(values[name]) : `{${name}}`,
+  );
+}
+
+function applyStaticTranslations() {
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = t(element.dataset.i18n);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-html]")) {
+    element.innerHTML = t(element.dataset.i18nHtml);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-placeholder]")) {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  }
+  for (const element of document.querySelectorAll("[data-i18n-content]")) {
+    element.setAttribute("content", t(element.dataset.i18nContent));
+  }
+
+  for (const link of document.querySelectorAll("[data-locale-link]")) {
+    const locale = link.dataset.localeLink;
+    link.classList.toggle("active", locale === currentLocale);
+    if (locale === currentLocale) link.setAttribute("aria-current", "page");
+    const filename =
+      locale === "en"
+        ? "sing-box-config-builder.en.html"
+        : "sing-box-config-builder.html";
+    link.href =
+      location.protocol === "file:"
+        ? filename
+        : locale === "en"
+          ? "/en/"
+          : "/";
+  }
+}
+
+applyStaticTranslations();
 
 // Shared validation and normalization helpers.
 
@@ -923,7 +1248,9 @@ function entryName(entry, index, prefix) {
   } else if (entry?.tag) {
     return `${prefix}${entry.tag}`;
   }
-  return `${prefix}${String(index + 1).padStart(2, "0")} Узел`;
+  return `${prefix}${t("node.generated", {
+    number: String(index + 1).padStart(2, "0"),
+  })}`;
 }
 
 function unsupportedNode(entry, index, prefix, reason) {
@@ -1264,7 +1591,7 @@ function decodeBase64(value) {
 
 function decodeSubscription(text) {
   const input = text.trim();
-  if (!input) throw new Error("Подписка пустая");
+  if (!input) throw new Error(t("subscription.empty"));
 
   try {
     const parsed = JSON.parse(input);
@@ -1292,7 +1619,7 @@ function decodeSubscription(text) {
           ["vless", "trojan", "hysteria2"].includes(item?.type),
         );
         if (nodes.length === 0) {
-          throw new Error("В JSON sing-box нет поддерживаемых узлов");
+          throw new Error(t("subscription.noSupportedJsonNodes"));
         }
         return nodes;
       }
@@ -1312,7 +1639,7 @@ function decodeSubscription(text) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
-  if (links.length === 0) throw new Error("В подписке нет узлов");
+  if (links.length === 0) throw new Error(t("subscription.noNodes"));
   return links;
 }
 
@@ -1321,7 +1648,7 @@ function parseLink(link, index, prefix) {
   try {
     uri = new URL(link);
   } catch {
-    return unsupportedNode(link, index, prefix, "некорректная ссылка");
+    return unsupportedNode(link, index, prefix, t("reason.invalidLink"));
   }
 
   const scheme = uri.protocol.slice(0, -1);
@@ -1334,12 +1661,12 @@ function parseLink(link, index, prefix) {
       link,
       index,
       prefix,
-      "некорректный или локальный адрес сервера",
+      t("reason.invalidServer"),
     );
   }
   const rawServerName = params.get("sni");
   if (rawServerName && !normalizeServerHost(rawServerName)) {
-    return unsupportedNode(link, index, prefix, "некорректный SNI");
+    return unsupportedNode(link, index, prefix, t("reason.invalidSni"));
   }
 
   if (scheme === "vless") {
@@ -1351,13 +1678,15 @@ function parseLink(link, index, prefix) {
         prefix,
         transportInfo.sourceType === "xhttp" ||
           transportInfo.sourceType === "splithttp"
-          ? "XHTTP не поддерживается sing-box"
-          : `транспорт ${transportInfo.sourceType} не поддерживается`,
+          ? t("reason.xhttpUnsupported")
+          : t("reason.unsupportedTransport", {
+              transport: transportInfo.sourceType,
+            }),
       );
     }
     const uuid = normalizeVlessUuid(uri.username);
     if (!uuid) {
-      return unsupportedNode(link, index, prefix, "некорректный UUID VLESS");
+      return unsupportedNode(link, index, prefix, t("reason.invalidVlessUuid"));
     }
     const outbound = {
       type: "vless",
@@ -1372,7 +1701,7 @@ function parseLink(link, index, prefix) {
     if (packetEncoding) outbound.packet_encoding = packetEncoding;
     const tls = tlsFromLink(uri, server);
     if (tls === null) {
-      return unsupportedNode(link, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(link, index, prefix, t("reason.invalidTlsReality"));
     }
     if (tls) outbound.tls = tls;
     if (transportInfo.transport) {
@@ -1388,7 +1717,9 @@ function parseLink(link, index, prefix) {
         link,
         index,
         prefix,
-        `транспорт ${transportInfo.sourceType} не поддерживается`,
+        t("reason.unsupportedTransport", {
+          transport: transportInfo.sourceType,
+        }),
       );
     }
     const outbound = {
@@ -1400,7 +1731,7 @@ function parseLink(link, index, prefix) {
     };
     const tls = tlsFromLink(uri, server);
     if (tls === null) {
-      return unsupportedNode(link, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(link, index, prefix, t("reason.invalidTlsReality"));
     }
     outbound.tls = tls || { enabled: true, server_name: server };
     if (transportInfo.transport) {
@@ -1433,7 +1764,9 @@ function parseLink(link, index, prefix) {
     link,
     index,
     prefix,
-    `протокол ${scheme || "не определён"} не поддерживается`,
+    t("reason.unsupportedProtocol", {
+      protocol: scheme || t("reason.unknownProtocol"),
+    }),
   );
 }
 
@@ -1444,7 +1777,7 @@ function parseXray(config, index, prefix) {
       config,
       index,
       prefix,
-      "в JSON отсутствует outbound",
+      t("reason.missingOutbound"),
     );
   }
   const protocol = sourceOutbound.protocol;
@@ -1459,7 +1792,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный VLESS",
+        t("reason.invalidVless"),
       );
     }
     const transportInfo = transportFromXray(stream);
@@ -1470,8 +1803,10 @@ function parseXray(config, index, prefix) {
         prefix,
         transportInfo.sourceType === "xhttp" ||
           transportInfo.sourceType === "splithttp"
-          ? "XHTTP не поддерживается sing-box"
-          : `транспорт ${transportInfo.sourceType} не поддерживается`,
+          ? t("reason.xhttpUnsupported")
+          : t("reason.unsupportedTransport", {
+              transport: transportInfo.sourceType,
+            }),
       );
     }
     const server = normalizeServerHost(destination.address);
@@ -1482,7 +1817,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный адрес, порт или UUID VLESS",
+        t("reason.invalidVlessTarget"),
       );
     }
     const outbound = {
@@ -1498,7 +1833,12 @@ function parseXray(config, index, prefix) {
     }
     const tls = tlsFromXray(stream, server);
     if (tls === null) {
-      return unsupportedNode(config, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidTlsReality"),
+      );
     }
     if (tls) outbound.tls = tls;
     if (transportInfo.transport) {
@@ -1514,7 +1854,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный Trojan",
+        t("reason.invalidTrojan"),
       );
     }
     const transportInfo = transportFromXray(stream);
@@ -1523,7 +1863,9 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        `транспорт ${transportInfo.sourceType} не поддерживается`,
+        t("reason.unsupportedTransport", {
+          transport: transportInfo.sourceType,
+        }),
       );
     }
     const server = normalizeServerHost(destination.address);
@@ -1533,7 +1875,7 @@ function parseXray(config, index, prefix) {
         config,
         index,
         prefix,
-        "некорректный Trojan",
+        t("reason.invalidTrojan"),
       );
     }
     const outbound = {
@@ -1545,7 +1887,12 @@ function parseXray(config, index, prefix) {
     };
     const tls = tlsFromXray(stream, server);
     if (tls === null) {
-      return unsupportedNode(config, index, prefix, "некорректный TLS/Reality");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidTlsReality"),
+      );
     }
     if (tls) outbound.tls = tls;
     if (transportInfo.transport) {
@@ -1564,7 +1911,12 @@ function parseXray(config, index, prefix) {
     const server = normalizeServerHost(settings.address);
     const serverPort = normalizeServerPort(settings.port);
     if (!server || !serverPort) {
-      return unsupportedNode(config, index, prefix, "некорректный Hysteria2");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidHysteria2"),
+      );
     }
     const outbound = {
       type: "hysteria2",
@@ -1579,7 +1931,12 @@ function parseXray(config, index, prefix) {
     };
     const tls = tlsFromXray(stream, server);
     if (tls === null) {
-      return unsupportedNode(config, index, prefix, "некорректный TLS Hysteria2");
+      return unsupportedNode(
+        config,
+        index,
+        prefix,
+        t("reason.invalidHysteria2Tls"),
+      );
     }
     if (tls) outbound.tls = tls;
     return {
@@ -1593,7 +1950,9 @@ function parseXray(config, index, prefix) {
     config,
     index,
     prefix,
-    `протокол ${protocol || "не определён"} не поддерживается`,
+    t("reason.unsupportedProtocol", {
+      protocol: protocol || t("reason.unknownProtocol"),
+    }),
   );
 }
 
@@ -1607,7 +1966,7 @@ function parseSingBoxOutbound(source, index, prefix) {
       source,
       index,
       prefix,
-      "некорректный или локальный адрес сервера",
+      t("reason.invalidServer"),
     );
   }
 
@@ -1619,8 +1978,10 @@ function parseSingBoxOutbound(source, index, prefix) {
       prefix,
       transportInfo.sourceType === "xhttp" ||
         transportInfo.sourceType === "splithttp"
-        ? "XHTTP не поддерживается sing-box"
-        : `транспорт ${transportInfo.sourceType} не поддерживается`,
+        ? t("reason.xhttpUnsupported")
+        : t("reason.unsupportedTransport", {
+            transport: transportInfo.sourceType,
+          }),
     );
   }
 
@@ -1631,7 +1992,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный UUID VLESS",
+        t("reason.invalidVlessUuid"),
       );
     }
     const outbound = {
@@ -1655,7 +2016,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный TLS/Reality",
+        t("reason.invalidTlsReality"),
       );
     }
     if (tls) outbound.tls = tls;
@@ -1672,7 +2033,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "в Trojan отсутствует пароль",
+        t("reason.missingTrojanPassword"),
       );
     }
     const outbound = {
@@ -1688,7 +2049,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный TLS/Reality",
+        t("reason.invalidTlsReality"),
       );
     }
     outbound.tls = tls || { enabled: true, server_name: server };
@@ -1705,7 +2066,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "в Hysteria2 отсутствует пароль",
+        t("reason.missingHysteria2Password"),
       );
     }
     const tls = tlsFromSingBox(source.tls, server);
@@ -1714,7 +2075,7 @@ function parseSingBoxOutbound(source, index, prefix) {
         source,
         index,
         prefix,
-        "некорректный TLS Hysteria2",
+        t("reason.invalidHysteria2Tls"),
       );
     }
     const outbound = {
@@ -1741,7 +2102,9 @@ function parseSingBoxOutbound(source, index, prefix) {
     source,
     index,
     prefix,
-    `протокол ${type || "не определён"} не поддерживается`,
+    t("reason.unsupportedProtocol", {
+      protocol: type || t("reason.unknownProtocol"),
+    }),
   );
 }
 
@@ -1778,12 +2141,17 @@ function updatePickerCount(source) {
   const found = source.inspected.length;
   const supported = source.inspected.filter((item) => item.outbound).length;
   const selected = selectedSourceCount(source);
-  source.pickerCount.textContent =
-    `${selected} выбрано из ${supported} рабочих · ${found} всего`;
+  source.pickerCount.textContent = t("picker.count", {
+    selected,
+    supported,
+    found,
+  });
 }
 
 function filterNodePicker(source) {
-  const query = source.nodeSearch.value.trim().toLocaleLowerCase("ru-RU");
+  const query = source.nodeSearch.value
+    .trim()
+    .toLocaleLowerCase(currentNumberLocale);
   for (const row of source.nodeOptions.children) {
     row.classList.toggle(
       "hidden",
@@ -1802,17 +2170,20 @@ function renderNodePicker(source) {
 
   source.inspected.forEach((item, index) => {
     const supported = Boolean(item.outbound);
-    const tag = item.outbound?.tag || item.tag || `${index + 1} Узел`;
+    const tag =
+      item.outbound?.tag ||
+      item.tag ||
+      t("node.generated", { number: index + 1 });
     const row = document.createElement("label");
     row.className = `node-option${supported ? "" : " unsupported"}`;
     row.dataset.search = `${tag} ${item.reason || ""} ${item.sourceType || ""}`
-      .toLocaleLowerCase("ru-RU");
+      .toLocaleLowerCase(currentNumberLocale);
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = supported && source.enabled[index] !== false;
     checkbox.disabled = !supported;
-    checkbox.setAttribute("aria-label", `Добавить туннель ${tag}`);
+    checkbox.setAttribute("aria-label", t("picker.addAria", { tag }));
     checkbox.addEventListener("change", () => {
       source.enabled[index] = checkbox.checked;
       updatePickerCount(source);
@@ -1827,8 +2198,8 @@ function renderNodePicker(source) {
     const meta = document.createElement("span");
     meta.className = "node-option-meta";
     meta.textContent = supported
-      ? `${item.outbound.type.toUpperCase()} · ${String(item.sourceType || "без транспорта").toUpperCase()}`
-      : `Не будет добавлен: ${item.reason}`;
+      ? `${item.outbound.type.toUpperCase()} · ${String(item.sourceType || t("picker.noTransport")).toUpperCase()}`
+      : t("picker.unsupported", { reason: item.reason });
     copy.append(name, meta);
     row.append(checkbox, copy);
     source.nodeOptions.append(row);
@@ -1869,8 +2240,8 @@ function updateSourceSummary() {
   }
   elements.sourceSummary.textContent =
     found === 0
-      ? "0 узлов"
-      : `${selected} выбрано из ${supported} рабочих (${found} найдено)`;
+      ? t("summary.zeroNodes")
+      : t("summary.nodes", { selected, supported, found });
 }
 
 function normalizeSubscriptionUrl(value) {
@@ -1896,50 +2267,46 @@ function renderSource(prefix = "") {
   wrapper.innerHTML = `
     <div class="source-grid">
       <label>
-        Ссылка подписки
-        <input class="source-url" type="url" placeholder="https://example.com/sub/…" autocomplete="off" />
+        ${t("source.urlLabel")}
+        <input class="source-url" type="url" placeholder="${t("source.urlPlaceholder")}" autocomplete="off" />
       </label>
       <label>
-        Префикс имён
-        <input class="source-prefix" value="${prefix.replaceAll('"', "&quot;")}" placeholder="необязательно" />
+        ${t("source.prefixLabel")}
+        <input class="source-prefix" value="${prefix.replaceAll('"', "&quot;")}" placeholder="${t("source.prefixPlaceholder")}" />
       </label>
     </div>
     <div class="source-actions">
-      <button class="btn btn-blue fetch-source" type="button">Загрузить по URL</button>
+      <button class="btn btn-blue fetch-source" type="button">${t("source.fetch")}</button>
       <label class="btn file-label">
-        Выбрать .txt/.json
+        ${t("source.file")}
         <input class="file-source" type="file" accept=".txt,.json,text/plain,application/json" />
       </label>
-      <label class="hwid-toggle" title="Отправлять HWID установленного Happ этому провайдеру">
+      <label class="hwid-toggle" title="${t("source.hwidTitle")}">
         <input class="source-use-hwid" type="checkbox" />
-        <span>HWID Happ</span>
+        <span>${t("source.hwid")}</span>
       </label>
-      <button class="btn btn-danger remove-source" type="button">Удалить</button>
+      <button class="btn btn-danger remove-source" type="button">${t("source.remove")}</button>
     </div>
-    <p class="hint">
-      <strong>HWID Happ</strong> нужен только для подписок, привязанных к
-      установленному приложению Happ, например tconnect. Для ссылок
-      <code>happ://…</code> он включается автоматически.
-    </p>
+    <p class="hint">${t("source.hwidHint")}</p>
     <details>
-      <summary>Или вставить содержимое подписки вручную</summary>
-      <textarea class="raw-input" spellcheck="false" placeholder="vless://… или base64/JSON"></textarea>
-      <button class="btn parse-raw" type="button">Прочитать вставленный текст</button>
+      <summary>${t("source.manualSummary")}</summary>
+      <textarea class="raw-input" spellcheck="false" placeholder="${t("source.rawPlaceholder")}"></textarea>
+      <button class="btn parse-raw" type="button">${t("source.parseRaw")}</button>
     </details>
     <details class="node-picker hidden" open>
       <summary>
-        <span>Выбор туннелей</span>
-        <span class="node-picker-count">0 выбрано</span>
+        <span>${t("source.selection")}</span>
+        <span class="node-picker-count">${t("source.selectedZero")}</span>
       </summary>
       <div class="node-picker-toolbar">
-        <input class="node-search" type="search" placeholder="Поиск по названию…" aria-label="Поиск туннелей" />
-        <button class="btn select-supported" type="button">Все рабочие</button>
-        <button class="btn clear-nodes" type="button">Снять все</button>
-        <button class="btn exclude-russia" type="button">Отключить Россию</button>
+        <input class="node-search" type="search" placeholder="${t("source.searchPlaceholder")}" aria-label="${t("source.searchAria")}" />
+        <button class="btn select-supported" type="button">${t("source.selectSupported")}</button>
+        <button class="btn clear-nodes" type="button">${t("source.clear")}</button>
+        <button class="btn exclude-russia" type="button">${t("source.excludeRussia")}</button>
       </div>
-      <div class="node-options" role="group" aria-label="Выбор VPN-туннелей"></div>
+      <div class="node-options" role="group" aria-label="${t("source.groupAria")}"></div>
     </details>
-    <div class="status">Источник ещё не загружен.</div>
+    <div class="status">${t("source.initial")}</div>
   `;
   elements.sourceList.append(wrapper);
 
@@ -2023,17 +2390,19 @@ function parseSourceText(id, text) {
       source.inspected.length === 1 &&
       onlyTag.toLocaleLowerCase("ru-RU").includes("приложение не поддерживается")
     ) {
-      throw new Error(
-        "Провайдер вернул заглушку. Включите «HWID Happ» и загрузите ещё раз.",
-      );
+      throw new Error(t("source.providerStub"));
     }
     const supported = source.inspected.filter((item) => item.outbound).length;
     const skipped = source.inspected.length - supported;
     setStatus(
       id,
       skipped
-        ? `Найдено ${entries.length}: поддерживаются ${supported}, будут пропущены ${skipped}.`
-        : `Загружено узлов: ${entries.length}.`,
+        ? t("source.loadedWithSkipped", {
+            found: entries.length,
+            supported,
+            skipped,
+          })
+        : t("source.loaded", { count: entries.length }),
       skipped ? "warn" : "ok",
     );
   } catch (error) {
@@ -2041,7 +2410,7 @@ function parseSourceText(id, text) {
     source.inspected = [];
     source.enabled = [];
     renderNodePicker(source);
-    setStatus(id, `Ошибка: ${error.message}`, "bad");
+    setStatus(id, t("source.error", { message: error.message }), "bad");
     updateSourceSummary();
   }
 }
@@ -2053,23 +2422,27 @@ async function fetchSource(id) {
   const fromHappLink = rawUrl.toLowerCase().startsWith("happ://add/");
   const url = normalizeSubscriptionUrl(rawUrl);
   if (!url) {
-    setStatus(id, "Вставьте ссылку подписки.", "warn");
+    setStatus(id, t("source.enterUrl"), "warn");
     return;
   }
   if (fromHappLink || subscriptionUsesHwid(url)) {
     source.useHwid.checked = true;
     source.url.value = url;
   }
-  setStatus(id, "Загружаю…");
+  setStatus(id, t("source.loading"));
   try {
     let text;
     if (backendAvailable) {
       const response = await fetch("/api/fetch-subscription", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": currentLocale,
+        },
         body: JSON.stringify({
           url,
           useHwid: source.useHwid.checked,
+          locale: currentLocale,
         }),
       });
       const payload = await response.json();
@@ -2078,7 +2451,7 @@ async function fetchSource(id) {
       }
       text = payload.text;
     } else if (source.useHwid.checked) {
-      throw new Error("Для HWID Happ нужен запущенный Python/Docker сервер");
+      throw new Error(t("source.hwidNeedsBackend"));
     } else if (location.protocol !== "file:") {
       const response = await fetch(url, {
         cache: "no-store",
@@ -2087,15 +2460,13 @@ async function fetchSource(id) {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       text = await response.text();
     } else {
-      throw new Error(
-        "HTML открыт без Python. Закройте вкладку и запустите start-sing-box-builder.command",
-      );
+      throw new Error(t("source.fileNeedsBackend"));
     }
     parseSourceText(id, text);
   } catch (error) {
     setStatus(
       id,
-      `Не удалось загрузить: ${error.message}`,
+      t("source.fetchFailed", { message: error.message }),
       "bad",
     );
   }
@@ -2104,8 +2475,7 @@ async function fetchSource(id) {
 async function checkBackend() {
   if (location.protocol === "file:") {
     backendAvailable = false;
-    elements.backendHelp.textContent =
-      "Эта вкладка открыта напрямую, поэтому браузер не даст скачать подписки. Закройте её и дважды нажмите start-sing-box-builder.command — Python откроет правильный адрес http://127.0.0.1:8765/.";
+    elements.backendHelp.textContent = t("backend.fileHelp");
     return;
   }
   try {
@@ -2114,8 +2484,7 @@ async function checkBackend() {
     backendAvailable = true;
   } catch {
     backendAvailable = false;
-    elements.backendHelp.textContent =
-      "Локальный Python-сервер недоступен. Запустите start-sing-box-builder.command и работайте во вкладке http://127.0.0.1:8765/.";
+    elements.backendHelp.textContent = t("backend.unavailable");
   }
 }
 
@@ -2256,11 +2625,11 @@ function normalizedDomains() {
 
 function updateDomainCount() {
   const count = normalizedDomains().length;
-  elements.domainCount.textContent = `${count} доменов`;
+  elements.domainCount.textContent = t("domain.count", { count });
 }
 
 function isRussianNodeTag(tag) {
-  const value = String(tag || "").toLocaleLowerCase("ru-RU");
+  const value = String(tag || "").toLocaleLowerCase(currentNumberLocale);
   return (
     value.includes("🇷🇺") ||
     value.includes("росси") ||
@@ -2273,8 +2642,7 @@ function invalidateGeneratedConfig() {
   generatedConfig = null;
   elements.downloadConfig.disabled = true;
   elements.copyConfig.disabled = true;
-  elements.buildStatus.textContent =
-    "Выбор туннелей изменён — соберите config.json заново.";
+  elements.buildStatus.textContent = t("config.invalidated");
   elements.buildStatus.className = "status warn";
 }
 
@@ -2288,14 +2656,10 @@ function validateSettings() {
   const interval = elements.healthInterval.value.trim();
   const intervalMs = parseDuration(interval);
   if (!intervalMs) {
-    return settingError(
-      "Интервал должен выглядеть как 10m, 20m или 1h.",
-    );
+    return settingError(t("validation.intervalFormat"));
   }
   if (intervalMs < MIN_HEALTH_INTERVAL_MS) {
-    return settingError(
-      "Для большого списка туннелей интервал должен быть не меньше 10m.",
-    );
+    return settingError(t("validation.intervalMinimum"));
   }
 
   const controller = elements.controllerAddress.value.trim();
@@ -2306,23 +2670,19 @@ function validateSettings() {
     controllerPort < 1 ||
     controllerPort > 65535
   ) {
-    return settingError(
-      "Адрес Yacd должен выглядеть как 0.0.0.0:9090.",
-    );
+    return settingError(t("validation.controller"));
   }
 
   const tunName = elements.tunName.value.trim();
   if (!/^[a-zA-Z0-9_.-]{1,15}$/.test(tunName)) {
-    return settingError(
-      "Имя TUN: от 1 до 15 букв, цифр, точек, дефисов или подчёркиваний.",
-    );
+    return settingError(t("validation.tunName"));
   }
 
   if (!elements.controllerSecret.value) {
     elements.controllerSecret.value = randomSecret();
   }
   if (elements.controllerSecret.value.length < 8) {
-    return settingError("Пароль Yacd должен содержать минимум 8 символов.");
+    return settingError(t("validation.secret"));
   }
   persistSettings();
   return true;
@@ -2347,8 +2707,7 @@ function buildConfig() {
     });
   }
   if (foundCount === 0) {
-    elements.buildStatus.textContent =
-      "Не найдено ни одного загруженного узла.";
+    elements.buildStatus.textContent = t("config.noLoadedNodes");
     elements.buildStatus.className = "status bad";
     return;
   }
@@ -2361,14 +2720,14 @@ function buildConfig() {
   if (nodes.length === 0) {
     elements.buildStatus.textContent =
       disabledCount > 0
-        ? "Выберите хотя бы один поддерживаемый туннель."
-        : `Найдено ${foundCount} узлов, но ни один не поддерживается sing-box. Для XHTTP используйте PassWall2 + Xray-core.`;
+        ? t("config.chooseTunnel")
+        : t("config.noSupported", { found: foundCount });
     elements.buildStatus.className = "status bad";
     elements.skippedStat.textContent = skippedNodes.length + disabledCount;
     elements.skippedDetails.textContent =
       disabledCount > 0
-        ? `Отключено вручную: ${disabledCount}.`
-        : "XHTTP нельзя превратить в рабочий sing-box outbound.";
+        ? t("config.disabled", { count: disabledCount })
+        : t("config.xhttpOnly");
     elements.skippedDetails.classList.remove("hidden");
     return;
   }
@@ -2423,27 +2782,28 @@ function buildConfig() {
       reasons.set(item.reason, (reasons.get(item.reason) || 0) + 1);
     }
     if (disabledCount) {
-      reasons.set("отключено вручную", disabledCount);
+      reasons.set(t("config.disabledReason"), disabledCount);
     }
-    elements.skippedDetails.textContent =
-      "Не добавлены: " +
-      [...reasons]
+    elements.skippedDetails.textContent = t("config.notAdded", {
+      reasons: [...reasons]
         .map(([reason, count]) => `${reason} — ${count}`)
-        .join("; ") +
-      ".";
+        .join("; "),
+    });
     elements.skippedDetails.classList.remove("hidden");
   } else {
     elements.skippedDetails.textContent = "";
     elements.skippedDetails.classList.add("hidden");
   }
   elements.directStat.textContent = domains.length;
-  elements.buildStatus.textContent =
-    `Готово: ${nodes.length} рабочих форматов, DIRECT по умолчанию` +
-    (skippedNodes.length || disabledCount
-      ? `, не добавлено ${skippedNodes.length + disabledCount}.`
-      : ".");
+  const skippedCount = skippedNodes.length + disabledCount;
+  elements.buildStatus.textContent = t("config.ready", {
+    count: nodes.length,
+    suffix: skippedCount
+      ? t("config.skippedSuffix", { count: skippedCount })
+      : t("config.noSkippedSuffix"),
+  });
   elements.buildStatus.className = "status ok";
-  showToast("config.json собран");
+  showToast(t("toast.built"));
 }
 
 function downloadConfig() {
@@ -2499,7 +2859,7 @@ document.getElementById("resetDomains").addEventListener("click", () => {
 document.getElementById("sortDomains").addEventListener("click", () => {
   elements.directDomains.value = normalizedDomains().join("\n");
   updateDomainCount();
-  showToast("Список очищен и отсортирован");
+  showToast(t("toast.sorted"));
 });
 document
   .getElementById("buildConfig")
@@ -2507,19 +2867,19 @@ document
 elements.downloadConfig.addEventListener("click", downloadConfig);
 elements.copyConfig.addEventListener("click", () => {
   if (generatedConfig) {
-    copyText(generatedConfig, "JSON скопирован");
+    copyText(generatedConfig, t("toast.jsonCopied"));
   }
 });
 document.getElementById("copyCommands").addEventListener("click", () => {
   copyText(
     document.getElementById("commands").textContent,
-    "Команды скопированы",
+    t("toast.commandsCopied"),
   );
 });
 document.getElementById("copyRecovery").addEventListener("click", () => {
   copyText(
     document.getElementById("recoveryCommands").textContent,
-    "Команды отключения скопированы",
+    t("toast.recoveryCopied"),
   );
 });
     </script>

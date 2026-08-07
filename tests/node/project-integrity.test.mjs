@@ -38,6 +38,7 @@ test("Docker image runs the backend unprivileged with a health check", () => {
   assert.match(dockerfile, /^USER builder$/m);
   assert.match(dockerfile, /^EXPOSE 8765$/m);
   assert.match(dockerfile, /^HEALTHCHECK /m);
+  assert.match(dockerfile, /sing-box-config-builder\.en\.html/);
   assert.match(dockerfile, /http:\/\/127\.0\.0\.1:8765\/api\/health/);
   assert.match(
     dockerfile,
@@ -99,6 +100,7 @@ test("macOS launchers start the local Python server from their own directory", (
 
 test("README documents every supported launch and recovery path", () => {
   const readme = read("README.md");
+  const englishReadme = read("README.en.md");
   for (const requiredText of [
     "docker compose up -d --build",
     "http://127.0.0.1:18765/",
@@ -109,5 +111,55 @@ test("README documents every supported launch and recovery path", () => {
     "/etc/init.d/sing-box disable",
   ]) {
     assert.ok(readme.includes(requiredText), `README не содержит: ${requiredText}`);
+    assert.ok(
+      englishReadme.includes(requiredText),
+      `README.en.md does not contain: ${requiredText}`,
+    );
   }
+  assert.ok(readme.includes("[English](README.en.md)"));
+  assert.ok(englishReadme.includes("[Русский](README.md)"));
+  assert.ok(readme.includes("http://127.0.0.1:18765/en/"));
+  assert.ok(englishReadme.includes("http://127.0.0.1:8765/en/"));
+});
+
+
+test("open-source community files and automation stay wired", () => {
+  for (const file of [
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "GOVERNANCE.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    ".github/ISSUE_TEMPLATE/bug_report.md",
+    ".github/ISSUE_TEMPLATE/feature_request.md",
+    ".github/ISSUE_TEMPLATE/question.md",
+    ".github/pull_request_template.md",
+    ".github/workflows/ci.yml",
+    ".github/dependabot.yml",
+  ]) {
+    assert.ok(
+      fs.existsSync(path.join(projectRoot, file)),
+      `missing open-source file: ${file}`,
+    );
+  }
+
+  const contributing = read("CONTRIBUTING.md");
+  assert.match(contributing, /npm run build/);
+  assert.match(contributing, /npm test/);
+  assert.match(contributing, /Never post real subscription URLs/);
+
+  const workflow = read(".github/workflows/ci.yml");
+  assert.match(workflow, /actions\/checkout@v6/);
+  assert.match(workflow, /actions\/setup-node@v5/);
+  assert.match(workflow, /actions\/setup-python@v6/);
+  assert.match(workflow, /git diff --exit-code/);
+  assert.match(workflow, /npm test/);
+
+  const packageJson = JSON.parse(read("package.json"));
+  assert.equal(packageJson.license, "MIT");
+  assert.equal(
+    packageJson.repository.url,
+    "git+https://github.com/Pavel2232/sing-box-config-builder.git",
+  );
 });

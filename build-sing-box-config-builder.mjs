@@ -6,15 +6,28 @@ const baseConfigPath =
 const directDomainsPath = "data/direct-domains.txt";
 const sourceParts = [
   ["__APP_CSS__", "src/styles.css"],
+  ["__I18N_JS__", "src/i18n.js"],
   ["__PARSER_NORMALIZATION_JS__", "src/parser-normalization.js"],
   ["__PARSER_TRANSPORTS_JS__", "src/parser-transports.js"],
   ["__SUBSCRIPTION_PARSER_JS__", "src/subscription-parser.js"],
   ["__SOURCE_UI_JS__", "src/source-ui.js"],
   ["__APP_JS__", "src/app.js"],
 ];
-const outputPaths = [
-  "sing-box-config-builder.html",
-  "sing-box-config-builder-local/sing-box-config-builder.html",
+const builds = [
+  {
+    locale: "ru",
+    outputPaths: [
+      "sing-box-config-builder.html",
+      "sing-box-config-builder-local/sing-box-config-builder.html",
+    ],
+  },
+  {
+    locale: "en",
+    outputPaths: [
+      "sing-box-config-builder.en.html",
+      "sing-box-config-builder-local/sing-box-config-builder.en.html",
+    ],
+  },
 ];
 
 const template = fs.readFileSync(templatePath, "utf8");
@@ -60,18 +73,34 @@ if (!template.includes("__BASE_CONFIG_JSON__")) {
   throw new Error("Template placeholder is missing");
 }
 
-let output = template;
-for (const [placeholder, sourcePath] of sourceParts) {
-  if (!output.includes(placeholder)) continue;
-  if (!fs.existsSync(sourcePath)) {
-    throw new Error(`Source part is missing: ${sourcePath}`);
+function render(locale) {
+  const metaDescription =
+    locale === "en"
+      ? "Local sing-box config.json generator for OpenWrt"
+      : "Локальный генератор sing-box config.json для OpenWrt";
+  let output = template
+    .replaceAll("__HTML_LANG__", locale)
+    .replaceAll("__META_DESCRIPTION__", metaDescription);
+  for (const [placeholder, sourcePath] of sourceParts) {
+    if (!output.includes(placeholder)) continue;
+    if (!fs.existsSync(sourcePath)) {
+      throw new Error(`Source part is missing: ${sourcePath}`);
+    }
+    output = output.replace(
+      placeholder,
+      fs.readFileSync(sourcePath, "utf8").trim(),
+    );
   }
-  output = output.replace(placeholder, fs.readFileSync(sourcePath, "utf8").trim());
+  return output.replace("__BASE_CONFIG_JSON__", embeddedConfig);
 }
-output = output.replace("__BASE_CONFIG_JSON__", embeddedConfig);
 
-for (const outputPath of outputPaths) {
-  fs.writeFileSync(outputPath, output);
+const writtenPaths = [];
+for (const build of builds) {
+  const output = render(build.locale);
+  for (const outputPath of build.outputPaths) {
+    fs.writeFileSync(outputPath, output);
+    writtenPaths.push(outputPath);
+  }
 }
 
 // Docker keeps a self-contained context for compatibility. These copies are
@@ -85,4 +114,4 @@ for (const [sourcePath, outputPath] of [
   }
 }
 
-process.stdout.write(`${outputPaths.join("\n")}\n`);
+process.stdout.write(`${writtenPaths.join("\n")}\n`);

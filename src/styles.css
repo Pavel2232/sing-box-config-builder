@@ -112,6 +112,35 @@ h3 {
   color: var(--muted);
   line-height: 1.6;
 }
+
+.language-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(3, 12, 18, 0.52);
+}
+
+.language-switch a {
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.language-switch a:hover {
+  color: var(--text);
+}
+
+.language-switch a.active {
+  background: rgba(69, 224, 168, 0.13);
+  color: var(--accent);
+}
+
 .notice {
   margin-bottom: 18px;
   padding: 15px 17px;
@@ -557,7 +586,11 @@ summary {
   }
 
   .hero {
-    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .language-switch {
+    align-self: flex-start;
   }
 }
 

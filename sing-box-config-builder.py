@@ -24,6 +24,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parent
 HTML_PATH = ROOT / "sing-box-config-builder.html"
+EN_HTML_PATH = ROOT / "sing-box-config-builder.en.html"
 MAX_REQUEST_BYTES = 64 * 1024
 MAX_SUBSCRIPTION_BYTES = 16 * 1024 * 1024
 USER_AGENT = "SingBoxConfigBuilder/1.0"
@@ -33,6 +34,52 @@ HAPP_UNSUPPORTED_MARKER = "приложение не поддерживаетс�
 HWID_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{8,128}$")
 DNS_RESOLVE_ATTEMPTS = 3
 DNS_RETRY_DELAY_SECONDS = 0.25
+
+
+def normalize_locale(value: object) -> str:
+    return "en" if str(value or "").lower().startswith("en") else "ru"
+
+
+def localize_error_message(message: str, locale: str) -> str:
+    if locale != "en":
+        return message
+
+    exact_messages = {
+        "Разрешены только http:// и https:// ссылки": "Only http:// and https:// URLs are allowed",
+        "В ссылке отсутствует домен": "The URL has no hostname",
+        "Логин и пароль внутри URL не поддерживаются": "Usernames and passwords inside URLs are not supported",
+        "HWID Happ не настроен в Python/Docker сервере": "Happ HWID is not configured in the Python/Docker server",
+        "HWID Happ не удалось прочитать": "Could not read the Happ HWID",
+        "HWID Happ имеет неверный формат": "The Happ HWID has an invalid format",
+        "Подписка больше допустимых 16 MiB": "The subscription exceeds the 16 MiB limit",
+        "Провайдер отклонил HWID Happ. Обновите HWID из Happ.": "The provider rejected the Happ HWID. Update it from Happ.",
+        "Провайдер требует HWID Happ. Включите переключатель «HWID Happ».": "The provider requires a Happ HWID. Enable the “Happ HWID” switch.",
+        "HTML-файл не найден": "HTML file not found",
+        "Не найдено": "Not found",
+        "Некорректный размер запроса": "Invalid request size",
+    }
+    if message in exact_messages:
+        return exact_messages[message]
+
+    patterns = [
+        (
+            r"Не удалось разрешить домен «(.+?)»\. Повторите загрузку или проверьте DNS\.",
+            "Could not resolve domain “{0}”. Retry or check DNS.",
+        ),
+        (
+            r"Домен «(.+?)» не вернул ни одного IP-адреса",
+            "Domain “{0}” returned no IP addresses",
+        ),
+        (
+            r"Домен «(.+?)» указывает на локальный или служебный адрес",
+            "Domain “{0}” points to a local or reserved address",
+        ),
+    ]
+    for pattern, translated in patterns:
+        match = re.fullmatch(pattern, message)
+        if match:
+            return translated.format(*match.groups())
+    return message
 
 
 def is_public_host(hostname: str) -> bool:
@@ -62,9 +109,7 @@ def is_public_host(hostname: str) -> bool:
         ) from last_error
 
     if not addresses:
-        raise ValueError(
-            f"Домен «{hostname}» не вернул ни одного IP-адреса"
-        )
+        raise ValueError(f"Домен «{hostname}» не вернул ни одного IP-адреса")
 
     for address in addresses:
         ip = ipaddress.ip_address(address)
@@ -90,8 +135,7 @@ def validate_remote_url(url: str) -> urllib.parse.ParseResult:
         raise ValueError("Логин и пароль внутри URL не поддерживаются")
     if not is_public_host(parsed.hostname):
         raise ValueError(
-            f"Домен «{parsed.hostname}» указывает на локальный "
-            "или служебный адрес"
+            f"Домен «{parsed.hostname}» указывает на локальный или служебный адрес"
         )
     return parsed
 
@@ -112,9 +156,7 @@ class SafeRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 def load_happ_hwid() -> str:
     if not HAPP_HWID_FILE:
-        raise ValueError(
-            "HWID Happ не настроен в Python/Docker сервере"
-        )
+        raise ValueError("HWID Happ не настроен в Python/Docker сервере")
     try:
         hwid = Path(HAPP_HWID_FILE).read_text(encoding="utf-8").strip()
     except OSError as error:
@@ -181,9 +223,7 @@ def fetch_subscription(url: str, use_hwid: bool = False) -> tuple[str, str]:
         text = b"".join(chunks).decode(encoding, errors="replace")
         if contains_happ_unsupported_marker(text):
             if use_hwid:
-                raise ValueError(
-                    "Провайдер отклонил HWID Happ. Обновите HWID из Happ."
-                )
+                raise ValueError("Провайдер отклонил HWID Happ. Обновите HWID из Happ.")
             raise ValueError(
                 "Провайдер требует HWID Happ. Включите переключатель «HWID Happ»."
             )
@@ -206,15 +246,38 @@ class BuilderHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def request_locale(self) -> str:
+        return normalize_locale(self.headers.get("Accept-Language", ""))
+
     def do_GET(self) -> None:
         path = urllib.parse.urlparse(self.path).path
-        if path in {"/", "/index.html"}:
+        html_path: Path | None = None
+        locale = self.request_locale()
+        if path in {"/", "/index.html", "/sing-box-config-builder.html"}:
+            html_path = HTML_PATH
+            locale = "ru"
+        elif path in {
+            "/en",
+            "/en/",
+            "/en.html",
+            "/sing-box-config-builder.en.html",
+        }:
+            html_path = EN_HTML_PATH
+            locale = "en"
+
+        if html_path is not None:
             try:
-                body = HTML_PATH.read_bytes()
+                body = html_path.read_bytes()
             except FileNotFoundError:
                 self.send_json(
                     HTTPStatus.INTERNAL_SERVER_ERROR,
-                    {"ok": False, "error": "HTML-файл не найден"},
+                    {
+                        "ok": False,
+                        "error": localize_error_message(
+                            "HTML-файл не найден",
+                            locale,
+                        ),
+                    },
                 )
                 return
 
@@ -241,15 +304,25 @@ class BuilderHandler(BaseHTTPRequestHandler):
 
         self.send_json(
             HTTPStatus.NOT_FOUND,
-            {"ok": False, "error": "Не найдено"},
+            {
+                "ok": False,
+                "error": localize_error_message(
+                    "Не найдено",
+                    self.request_locale(),
+                ),
+            },
         )
 
     def do_POST(self) -> None:
         path = urllib.parse.urlparse(self.path).path
+        locale = self.request_locale()
         if path != "/api/fetch-subscription":
             self.send_json(
                 HTTPStatus.NOT_FOUND,
-                {"ok": False, "error": "Не найдено"},
+                {
+                    "ok": False,
+                    "error": localize_error_message("Не найдено", locale),
+                },
             )
             return
 
@@ -261,12 +334,19 @@ class BuilderHandler(BaseHTTPRequestHandler):
         if content_length <= 0 or content_length > MAX_REQUEST_BYTES:
             self.send_json(
                 HTTPStatus.BAD_REQUEST,
-                {"ok": False, "error": "Некорректный размер запроса"},
+                {
+                    "ok": False,
+                    "error": localize_error_message(
+                        "Некорректный размер запроса",
+                        locale,
+                    ),
+                },
             )
             return
 
         try:
             payload = json.loads(self.rfile.read(content_length))
+            locale = normalize_locale(payload.get("locale", locale))
             url = str(payload.get("url", "")).strip()
             use_hwid = payload.get("useHwid") is True
             text, final_url = fetch_subscription(url, use_hwid=use_hwid)
@@ -282,14 +362,21 @@ class BuilderHandler(BaseHTTPRequestHandler):
         except ValueError as error:
             self.send_json(
                 HTTPStatus.BAD_REQUEST,
-                {"ok": False, "error": str(error)},
+                {
+                    "ok": False,
+                    "error": localize_error_message(str(error), locale),
+                },
             )
         except urllib.error.HTTPError as error:
             self.send_json(
                 HTTPStatus.BAD_GATEWAY,
                 {
                     "ok": False,
-                    "error": f"Сервер подписки ответил HTTP {error.code}",
+                    "error": (
+                        f"Subscription server responded with HTTP {error.code}"
+                        if locale == "en"
+                        else f"Сервер подписки ответил HTTP {error.code}"
+                    ),
                 },
             )
         except (urllib.error.URLError, TimeoutError, OSError) as error:
@@ -298,7 +385,11 @@ class BuilderHandler(BaseHTTPRequestHandler):
                 HTTPStatus.BAD_GATEWAY,
                 {
                     "ok": False,
-                    "error": f"Не удалось скачать подписку: {reason}",
+                    "error": (
+                        f"Could not download the subscription: {reason}"
+                        if locale == "en"
+                        else f"Не удалось скачать подписку: {reason}"
+                    ),
                 },
             )
 
