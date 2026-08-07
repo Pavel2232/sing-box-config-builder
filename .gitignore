@@ -1,5 +1,6 @@
 node_modules/
 test-results/
+.idea/
 __pycache__/
 *.pyc
 .DS_Store
