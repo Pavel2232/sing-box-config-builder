@@ -9,7 +9,7 @@ COPY data ./data
 COPY src ./src
 RUN mkdir -p sing-box-config-builder-local && node build-sing-box-config-builder.mjs
 
-FROM python:3.13-alpine
+FROM python:3.14-alpine
 
 WORKDIR /app
 
